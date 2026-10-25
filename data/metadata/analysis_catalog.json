@@ -1,0 +1,664 @@
+{
+  "metadata_schema_version": "1.0.0",
+  "pipeline_version": "1.0.0",
+  "generated_at_utc": "2026-10-25T17:24:56.481206+00:00",
+  "competition_overview": {
+    "official_title": "NFL Big Data Bowl 2027",
+    "edition": "9th Annual NFL Big Data Bowl",
+    "kaggle_url": "https://www.kaggle.com/competitions/nfl-big-data-bowl-2027",
+    "nfl_ops_url": "https://operations.nfl.com/programs-initiatives/innovation/big-data-bowl",
+    "research_objective": "Connect 10 Hz NFL Scouting Combine wearable sensor tracking data (`combine_tracking.csv`) and standardized Combine drill scores (`combine_results.csv`) with regular-season NFL game performance (`player_play.csv`, `game_tracking_2023/2024/2025.csv`, `player_career_successes.csv`) across five core position groups: Wide Receivers (WR), Tight Ends (TE), Defensive Backs (DB), Offensive Linemen (OL), and Defensive Linemen (DL).",
+    "problem_paradigm": "Analytical & Research-Oriented Discovery Challenge \u2014 Unlike conventional single-column supervised leaderboard competitions, the NFL Big Data Bowl evaluates teams on the originality, statistical rigor, football actionability, and visualization clarity of their research framework connecting pre-draft Combine movement traits to regular-season NFL performance.",
+    "target_column_policy": "Do not assume a single mandatory target column exists. While `player_career_successes.csv` and `player_play.csv` provide official career and play-level outcome benchmarks, researchers may formulate specific kinematic transfer metrics, route/trench efficiency outcomes, or career milestone models appropriate to their chosen position group and drill hypothesis.",
+    "position_groups": [
+      {
+        "code": "WR",
+        "name": "Wide Receivers",
+        "focus": "Linear release burst, top-end speed maintenance, braking impulse entering route breaks, and exit velocity retention."
+      },
+      {
+        "code": "TE",
+        "name": "Tight Ends",
+        "focus": "Size-adjusted acceleration, hybrid inline blocking momentum vs. route-break separation efficiency."
+      },
+      {
+        "code": "DB",
+        "name": "Defensive Backs",
+        "focus": "Backpedal-to-sprint hip-turn angular velocity (`do/dt`), lateral strafe fluidity (`|o - dir|`), and closing burst."
+      },
+      {
+        "code": "OL",
+        "name": "Offensive Linemen",
+        "focus": "First-step 0.5s pass-set impulse, lateral mirror-and-slide agility, and mass-adjusted momentum."
+      },
+      {
+        "code": "DL",
+        "name": "Defensive Linemen",
+        "focus": "First-step pass-rush get-off (`0.0s-0.5s` burst), 3-cone bend/cornering curvature, and power-to-mass ratio."
+      }
+    ]
+  },
+  "research_questions": [
+    {
+      "id": "RQ-01",
+      "title": "Combine Deceleration & Braking Efficiency vs. NFL Route Separation (WR / TE)",
+      "category": "Combine Kinematics to On-Field Performance",
+      "position_groups": [
+        "WR",
+        "TE"
+      ],
+      "question": "Does a prospect's braking efficiency and transition time during the Combine 3-cone and 20-yard short shuttle drills provide incremental information about regular-season route-break velocity retention beyond traditional stopwatch drill times?",
+      "why_it_matters": "Stopwatch times conflate linear straight-line speed with change-of-direction mechanics. Two wide receivers with identical 7.00s 3-cone times may exhibit drastically different deceleration profiles entering the cone vs. re-acceleration exiting the break. On NFL passing downs, separation on sharp-breaking routes (Out, Dig, Comeback, Hitch) depends on minimizing deceleration warnings (sink-and-brake phase) and retaining exit velocity.",
+      "relevant_tables": [
+        "players.csv",
+        "combine_results.csv",
+        "combine_tracking.csv",
+        "player_play.csv",
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv"
+      ],
+      "exact_columns": [
+        "players.csv: nflId, position, height, weight",
+        "combine_results.csv: nflId, threeConeDrill, twentyYardShuttle, fortyYardDash",
+        "combine_tracking.csv: nflId, drillType, frameId, x, y, s, a, o, dir, event",
+        "player_play.csv: gameId, playId, nflId, routeRan",
+        "game_tracking_2023/2024/2025.csv: gameId, playId, nflId, frameId, s, a, o, dir, event"
+      ],
+      "required_joins": [
+        "players.csv (nflId) -> combine_results.csv (nflId) [1:1 expected]",
+        "players.csv (nflId) -> combine_tracking.csv (nflId) [1:N frame-level; aggregate to player-drill before joining to play outcomes]",
+        "player_play.csv (gameId, playId, nflId) -> game_tracking_YYYY.csv (gameId, playId, nflId) [1:N frame-level]"
+      ],
+      "proposed_features": [
+        "FE-02: Braking Deceleration Impulse & Entry-to-Exit Speed Ratio",
+        "FE-03: Orientation-Direction Divergence (|o - dir| CoD Fluidity)",
+        "FE-07: In-Game Route-Break Velocity Retention Index"
+      ],
+      "suggested_visualizations": [
+        "Phase-aligned velocity (s) and tangential acceleration (ds/dt) curves around Combine cone turns vs. stopwatch quartiles.",
+        "Bivariate partial-dependence contour of Combine Braking Efficiency vs. NFL Route-Break Velocity Retention stratified by WR/TE."
+      ],
+      "statistical_and_ml_methods": [
+        "Functional Data Analysis (FDA) / B-spline registration of 10 Hz velocity curves around apex turns.",
+        "Hierarchical Bayesian mixed-effects regression predicting play-level route break exit speed with random intercepts for player (`nflId`) and route type (`routeRan`), testing incremental likelihood ratio over stopwatch `threeConeDrill`."
+      ],
+      "confounders_and_leakage_risks": [
+        "Selection bias: Elite WR prospects increasingly opt out of agility drills at the Combine.",
+        "Tactical confounding: Press vs. off-man coverage and defensive double-teams alter in-game route deceleration.",
+        "Temporal leakage hazard: Must strictly ensure Combine tracking precedes the regular-season seasons evaluated."
+      ],
+      "sample_size_considerations": "Requires filtering to WR/TE prospects who both completed Combine agility tracking and logged sufficient regular-season route snaps (>= 100 routes ran).",
+      "validation_strategy": "Draft-cohort out-of-sample cross-validation (e.g., train on earlier draft classes, evaluate rank-order calibration on subsequent rookie cohorts) and bootstrap confidence intervals over player clusters.",
+      "supporting_or_weakening_evidence": {
+        "supports": "Out-of-sample partial R^2 or C-index improvement (>0.03) when adding 10 Hz braking features to a baseline model containing stopwatch 3-cone and 40-yard dash times.",
+        "weakens": "High collinearity (r > 0.90) between sensor braking integrals and simple stopwatch times, or low test-retest stability across game seasons."
+      },
+      "known_limitations": "Cannot claim causal interventions without accounting for collegiate coaching and NFL offensive scheme role assignment.",
+      "feasibility_status": "Feasible (Requires local download and profiling of combine_tracking.csv, player_play.csv, and game_tracking CSVs)"
+    },
+    {
+      "id": "RQ-02",
+      "title": "First-Step Kinematic Impulse in Trench Prospects (OL / DL) & Pass-Rush / Pass-Set Translation",
+      "category": "Trench Biomechanics & Force Proxy",
+      "position_groups": [
+        "OL",
+        "DL"
+      ],
+      "question": "How well do initial 0.0s\u20130.5s acceleration impulse and body-mass-adjusted momentum during Combine drills predict post-snap first-step burst and trench engagement kinematics for Offensive and Defensive Linemen in NFL regular-season games?",
+      "why_it_matters": "For OL and DL prospects, the final 40-yard dash time (30\u201340 yards downfield) is biomechanically unrepresentative of trench play, which occurs within 1.5 seconds and 3\u20135 yards of the line of scrimmage. Even the 10-yard split is a coarse cumulative timer. 10 Hz sensor tracking allows measuring peak initial acceleration (`a` in frames 1\u20135), jerk (`da/dt`), and mass-adjusted momentum (`weight * s`).",
+      "relevant_tables": [
+        "players.csv",
+        "combine_results.csv",
+        "combine_tracking.csv",
+        "player_play.csv",
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv",
+        "player_career_successes.csv"
+      ],
+      "exact_columns": [
+        "players.csv: nflId, position, height, weight",
+        "combine_results.csv: nflId, tenYardSplit, fortyYardDash, broadJump",
+        "combine_tracking.csv: nflId, drillType, frameId, s, a, dis, o, dir",
+        "player_play.csv: gameId, playId, nflId",
+        "game_tracking_2023/2024/2025.csv: gameId, playId, nflId, frameId, s, a, o, dir, event"
+      ],
+      "required_joins": [
+        "players.csv (nflId) -> combine_results.csv (nflId)",
+        "players.csv (nflId) -> combine_tracking.csv (nflId)",
+        "players.csv (nflId) -> player_career_successes.csv (nflId)"
+      ],
+      "proposed_features": [
+        "FE-01: First-Step Peak Acceleration & Jerk (0.0s-0.5s Window)",
+        "FE-05: Mass-Adjusted Peak Kinetic Energy & Momentum Proxy",
+        "FE-06: Position-Group Z-Score & Mahalanobis Kinematic Distance"
+      ],
+      "suggested_visualizations": [
+        "Mass vs. Initial 0.5s Peak Acceleration Pareto frontier for DL and OL prospects.",
+        "Comparison of Combine 0.5s burst percentile vs. NFL regular-season post-`ball_snap` 0.5s burst percentile."
+      ],
+      "statistical_and_ml_methods": [
+        "Quantile regression (90th percentile in-game burst as a function of Combine 0.5s impulse) to account for play-effort variance.",
+        "Regularized ElasticNet / Gradient Boosted Survival or Ordinal models linking trench impulse to `player_career_successes.csv` benchmarks."
+      ],
+      "confounders_and_leakage_risks": [
+        "Stance confounding: 3-point stance in the 40-yard dash vs. 2-point pass-set stance for offensive tackles.",
+        "Play-call effort: Linemen do not sprint at 100% capacity on screen plays or run blocks away from play side; using mean in-game speed instead of 90th/95th percentile post-snap burst introduces severe attenuation bias."
+      ],
+      "sample_size_considerations": "Separate interior DL (DT/NT) from edge rushers (DE) and interior OL (OG/C) from offensive tackles (OT) where sample sizes permit.",
+      "validation_strategy": "Leave-one-draft-class-out validation; stability correlation (ICC) between 2023, 2024, and 2025 regular-season post-snap burst.",
+      "supporting_or_weakening_evidence": {
+        "supports": "Stronger rank correlation (Spearman rho) between Combine 0.0-0.5s sensor impulse and NFL 95th-percentile post-snap burst than with stopwatch 10-yard split.",
+        "weakens": "High noise or frame-alignment jitter in the first 3 frames of `combine_tracking.csv` relative to `ball_snap` in game tracking."
+      },
+      "known_limitations": "RFID tags mounted in shoulder pads measure torso translation, not independent foot strike or hand punch timing.",
+      "feasibility_status": "Feasible (Pending local CSV acquisition)"
+    },
+    {
+      "id": "RQ-03",
+      "title": "Defensive Back Hip-Flip Fluidity & Backpedal-to-Sprint Transition Mechanics (DB)",
+      "category": "Positional Drill Biomechanics",
+      "position_groups": [
+        "DB"
+      ],
+      "question": "Can angular velocity of body orientation (`do/dt`) and minimal speed loss during Combine backpedal-and-turn drills quantify 'hip fluidity' in Defensive Backs and predict in-game phase maintenance against vertical and breaking routes?",
+      "why_it_matters": "Scouts routinely describe cornerbacks and safeties as having 'fluid' or 'stiff' hips, a qualitative judgment rarely captured by linear stopwatch tests. During Combine positional drills and agility tests, 10 Hz orientation (`o`) and motion direction (`dir`) vectors directly measure how rapidly a DB can rotate their torso by 180 degrees while minimizing translational deceleration.",
+      "relevant_tables": [
+        "players.csv",
+        "combine_tracking.csv",
+        "player_play.csv",
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv"
+      ],
+      "exact_columns": [
+        "players.csv: nflId, position",
+        "combine_tracking.csv: nflId, drillType, frameId, s, a, o, dir",
+        "player_play.csv: gameId, playId, nflId",
+        "game_tracking_2023/2024/2025.csv: gameId, playId, nflId, frameId, x, y, s, a, o, dir"
+      ],
+      "required_joins": [
+        "players.csv (nflId) -> combine_tracking.csv (nflId)",
+        "player_play.csv (gameId, playId, nflId) -> game_tracking_YYYY.csv (gameId, playId, nflId)"
+      ],
+      "proposed_features": [
+        "FE-03: Orientation-Direction Divergence (|o - dir| CoD Fluidity)",
+        "FE-04: Peak Angular Hip-Turn Velocity & Transition Speed Retention"
+      ],
+      "suggested_visualizations": [
+        "Polar phase plot of torso orientation (`o`) vs. movement direction (`dir`) during Combine DB drills.",
+        "Speed retention curve across the [-0.5s, +0.5s] window centered on peak angular rotation (`max |do/dt|`)."
+      ],
+      "statistical_and_ml_methods": [
+        "Circular statistics (von Mises kernel smoothing) on unwrapped orientation angles.",
+        "Mixed-effects modeling of in-game coverage transition speed loss on passing plays."
+      ],
+      "confounders_and_leakage_risks": [
+        "Coverage scheme confounding: Zone coverage (eyes on quarterback, backpedal posture) exhibits fundamentally different `|o - dir|` signatures than press-man trail technique.",
+        "Angle wrap-around artifact: Naive subtraction of `o` across the 0/360 degree boundary produces artificial 359-degree spikes if not unwrapped via `atan2(sin(\u0394\u03b8), cos(\u0394\u03b8))`."
+      ],
+      "sample_size_considerations": "Ensure DB drills in `combine_tracking.csv` have sufficient frame density around transition events.",
+      "validation_strategy": "Split-half reliability across multiple Combine drill attempts and cross-season consistency in NFL coverage snaps.",
+      "supporting_or_weakening_evidence": {
+        "supports": "High intra-player reliability (ICC > 0.65) of transition speed retention during high `|do/dt|` events between Combine and NFL games.",
+        "weakens": "Sensor orientation `o` jitter during rapid shoulder-pad rotation exceeding the 10 Hz Nyquist frequency for sub-0.2s turns."
+      },
+      "known_limitations": "10 Hz sampling (100 ms per frame) sets a physical resolution limit on sub-100ms micro-movements.",
+      "feasibility_status": "Feasible (Pending local CSV acquisition)"
+    },
+    {
+      "id": "RQ-04",
+      "title": "Combine Underwear Speed vs. Functional Padded Game Speed (All 5 Position Groups)",
+      "category": "Measurement Context Stability",
+      "position_groups": [
+        "WR",
+        "TE",
+        "DB",
+        "OL",
+        "DL"
+      ],
+      "question": "How stable is the rank ordering of peak velocity and acceleration between unpadded Combine drills and padded regular-season NFL games across WR, TE, DB, OL, and DL cohorts, and which kinematic traits exhibit the smallest context-transfer decay?",
+      "why_it_matters": "A central debate in NFL scouting is 'track speed vs. play speed'\u2014prospects who run fast in shorts on a predetermined track at the Combine may slow down disproportionately when wearing pads, reading keys, and reacting to contact on an NFL field.",
+      "relevant_tables": [
+        "players.csv",
+        "combine_results.csv",
+        "combine_tracking.csv",
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv"
+      ],
+      "exact_columns": [
+        "players.csv: nflId, position, weight",
+        "combine_results.csv: nflId, fortyYardDash",
+        "combine_tracking.csv: nflId, drillType, s, a",
+        "game_tracking_2023/2024/2025.csv: nflId, s, a"
+      ],
+      "required_joins": [
+        "players.csv (nflId) -> combine_tracking.csv (nflId) [player-level kinematic envelope]",
+        "players.csv (nflId) -> game_tracking_YYYY.csv (nflId) [player-season kinematic envelope]"
+      ],
+      "proposed_features": [
+        "FE-01: First-Step Peak Acceleration & Jerk",
+        "FE-08: Combine-to-Game Kinematic Transfer Ratio (Functional Play Speed Retention)"
+      ],
+      "suggested_visualizations": [
+        "Bland-Altman agreement plots and dumbbell rank-shift charts comparing Combine 99th-percentile speed vs. NFL 99th-percentile speed by position group."
+      ],
+      "statistical_and_ml_methods": [
+        "Intraclass Correlation Coefficients (ICC) and Spearman rank stability across position groups.",
+        "Errors-in-variables regression accounting for opportunity volume (number of NFL snaps played) via empirical Bayes shrinkage."
+      ],
+      "confounders_and_leakage_risks": [
+        "Opportunity/snap-count bias: Sample maximum (`max(s)`) is an order statistic that grows monotonically with sample size (total frames played). A backup WR with 30 snaps will have a downward-biased empirical `max(s)` compared to a starter with 800 snaps.",
+        "Survivorship bias: Only prospects who make an NFL roster and earn regular-season snaps appear in `game_tracking_2023/2024/2025.csv`."
+      ],
+      "sample_size_considerations": "Use exposure-adjusted quantiles or extreme-value theory (Generalized Pareto Distribution) rather than raw sample maxima to compare players with unequal snap counts.",
+      "validation_strategy": "Subsample equal numbers of plays per player (e.g., 50 random plays) via Monte Carlo resampling to eliminate snap-volume bias.",
+      "supporting_or_weakening_evidence": {
+        "supports": "Consistent rank preservation (rho > 0.70) after controlling for snap exposure, or identification of specific Combine sub-phases that predict positive transfer.",
+        "weakens": "Severe range restriction among drafted NFL starters obscuring bivariate correlations without Heckman or inverse-probability-of-censoring adjustments."
+      },
+      "known_limitations": "Unobserved injury history between Combine and regular season can depress functional game speed.",
+      "feasibility_status": "Feasible (Pending local CSV acquisition)"
+    },
+    {
+      "id": "RQ-05",
+      "title": "Multivariate Kinematic Archetypes vs. Career Outcomes & Survivorship Bias Adjustment",
+      "category": "Career Outcomes & Selection Bias",
+      "position_groups": [
+        "WR",
+        "TE",
+        "DB",
+        "OL",
+        "DL"
+      ],
+      "question": "After adjusting for draft-selection and roster survivorship bias, which multi-dimensional Combine sensor archetypes (combining burst, braking efficiency, angular fluidity, and size) are associated with superior longitudinal outcomes in `player_career_successes.csv`?",
+      "why_it_matters": "Evaluating Combine metrics solely on NFL starters suffers from classic Berkson's / collider stratification bias (often cited in sports analytics as the 'draft selection paradox'). Because NFL front offices already select players using traditional stopwatch metrics (`combine_results.csv`), conditioning on NFL snap volume can artificially attenuate the apparent effect of known metrics while highlighting orthogonal sensor traits that scouts previously under-weighted.",
+      "relevant_tables": [
+        "players.csv",
+        "combine_results.csv",
+        "combine_tracking.csv",
+        "player_career_successes.csv"
+      ],
+      "exact_columns": [
+        "players.csv: nflId, position, height, weight, birthDate",
+        "combine_results.csv: all drill columns",
+        "combine_tracking.csv: nflId, drillType, s, a, o, dir",
+        "player_career_successes.csv: nflId and career outcome columns"
+      ],
+      "required_joins": [
+        "players.csv (nflId) -> combine_results.csv (nflId)",
+        "players.csv (nflId) -> combine_tracking.csv (nflId)",
+        "players.csv (nflId) -> player_career_successes.csv (nflId)"
+      ],
+      "proposed_features": [
+        "FE-05: Mass-Adjusted Peak Kinetic Energy & Momentum Proxy",
+        "FE-06: Position-Group Z-Score & Mahalanobis Kinematic Distance"
+      ],
+      "suggested_visualizations": [
+        "Parallel coordinates / radar profile of Combine sensor archetypes by position group.",
+        "Comparison of unadjusted vs. Inverse Probability of Censoring Weighted (IPCW) effect estimates on career success outcomes."
+      ],
+      "statistical_and_ml_methods": [
+        "Gaussian Mixture Models (GMM) or regularized PCA within each position group to extract orthogonal movement components (Linear Burst, Braking Control, Angular Fluidity, Mass-Momentum).",
+        "Two-stage Heckman selection model or Inverse Probability Weighting (IPW) modeling the probability of logging regular-season snaps before modeling career success metrics."
+      ],
+      "confounders_and_leakage_risks": [
+        "Draft capital confounding: High draft picks receive guaranteed roster spots and more early-career snaps regardless of rookie efficiency.",
+        "Right-censoring: 2024 and 2025 draft cohorts have fewer elapsed NFL seasons than 2023 cohorts; outcome metrics in `player_career_successes.csv` must be normalized by cohort exposure."
+      ],
+      "sample_size_considerations": "Bounded by total number of prospects in `combine_results.csv` (~41 KB) and `player_career_successes.csv` (~13.8 KB), likely several hundred prospects total across the 5 position groups.",
+      "validation_strategy": "Nested cross-validation with strict cohort awareness and sensitivity analysis (E-values) for unmeasured draft-capital confounding.",
+      "supporting_or_weakening_evidence": {
+        "supports": "Orthogonal sensor components (e.g., braking/fluidity residuals orthogonal to 40-yard dash) showing statistically significant association with `player_career_successes.csv` outcomes.",
+        "weakens": "Small sample size per position group resulting in wide confidence intervals that span zero after multiple-testing correction."
+      },
+      "known_limitations": "Observational associations cannot establish what would have happened had an undrafted prospect been given starter snaps.",
+      "feasibility_status": "Feasible (Tier-1 priority once small CSVs are downloaded)"
+    }
+  ],
+  "feature_engineering": [
+    {
+      "id": "FE-01",
+      "name": "First-Step Peak Acceleration & Jerk Impulse (0.0s\u20130.5s Window)",
+      "category": "Acceleration & Burst Kinematics",
+      "derivation_type": "Aggregated & Transformed",
+      "formula_latex": "a_{\\text{peak}, 0.5\\text{s}} = \\max_{t \\in [t_0, t_0 + 0.5\\text{s}]} a(t), \\quad j_{\\text{peak}, 0.5\\text{s}} = \\max_{t \\in [t_0, t_0 + 0.5\\text{s}]} \\frac{a(t + \\Delta t) - a(t)}{\\Delta t}",
+      "definition": "Maximum instantaneous acceleration and finite-difference jerk within the first 5 frames (0.5 seconds at 10 Hz) following movement initiation in a Combine drill or `ball_snap` in regular-season play.",
+      "input_columns": [
+        "nflId",
+        "frameId",
+        "s",
+        "a",
+        "event"
+      ],
+      "source_tables": [
+        "combine_tracking.csv",
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv"
+      ],
+      "units": "Acceleration: yd/s^2; Jerk: yd/s^3 (given \u0394t = 0.1s)",
+      "windowing_and_aggregation": "Anchor t_0 at drill start event (or first frame where s > 0.5 yd/s if start event is absent) in Combine tracking, and at `event == 'ball_snap'` in game tracking. Aggregate across frames t_0 to t_0 + 5 per attempt/play, then take 90th percentile across plays per player.",
+      "missing_data_handling": "Discard plays/attempts missing the start anchor or containing dropped frame sequences (\u0394frameId > 1) inside the 0.5s window.",
+      "leakage_concerns": "Low leakage risk when computed strictly within pre-draft `combine_tracking.csv`. When computed on game tracking as a target benchmark, restrict to plays from the specific season being evaluated.",
+      "implementation_status": "Documented & Ready for Pipeline Execution",
+      "validation_and_tests": "Verify \u0394t == 0.1s uniformity; assert non-negativity of `a`; verify finite-difference consistency between `s(t+1) - s(t)` and tangential acceleration."
+    },
+    {
+      "id": "FE-02",
+      "name": "Braking Deceleration Impulse & Entry-to-Exit Speed Ratio",
+      "category": "Deceleration & Change of Direction",
+      "derivation_type": "Transformed & Windowed",
+      "formula_latex": "a_{\\text{tangential}}(t) = \\frac{s(t) - s(t - \\Delta t)}{\\Delta t}, \\quad I_{\\text{brake}} = \\sum_{t \\in W_{\\text{pre-cut}}} \\min(0, a_{\\text{tangential}}(t)) \\cdot \\Delta t, \\quad R_{\\text{speed}} = \\frac{s(t_{\\text{apex}} + 0.5\\text{s})}{s(t_{\\text{apex}} - 0.5\\text{s})}",
+      "definition": "Signed tangential deceleration integrated over the 0.5s braking window prior to a direction-change apex (`t_apex`), paired with the ratio of exit speed (+0.5s post-apex) to entry speed (-0.5s pre-apex).",
+      "input_columns": [
+        "nflId",
+        "drillType",
+        "frameId",
+        "s",
+        "a",
+        "dir"
+      ],
+      "source_tables": [
+        "combine_tracking.csv",
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv"
+      ],
+      "units": "Tangential Deceleration: yd/s^2; Braking Impulse: yd/s; Speed Ratio: dimensionless [0, 2]",
+      "windowing_and_aggregation": "Identify change-of-direction apex `t_apex` as local minimum of speed `s(t)` coinciding with angular path deflection `|\u0394dir| > 45\u00b0`. Window [-5, +5] frames around `t_apex`.",
+      "missing_data_handling": "Require at least 5 contiguous frames before and after `t_apex` and entry speed `s(t_apex - 0.5s) >= 3.0 yd/s` to avoid dividing by near-zero stationary speeds.",
+      "leakage_concerns": "None when derived from Combine agility drills (3-cone, 20-yard shuttle, positional cuts).",
+      "implementation_status": "Documented & Ready for Pipeline Execution",
+      "validation_and_tests": "Note that Next Gen Stats column `a` is unsigned magnitude; signed braking MUST be derived via `ds/dt` or projection of acceleration vector onto velocity vector."
+    },
+    {
+      "id": "FE-03",
+      "name": "Orientation-Direction Divergence (Torso-Path Alignment Angle)",
+      "category": "Angular & Biomechanical Fluidity",
+      "derivation_type": "Transformed",
+      "formula_latex": "\\delta_{\\theta}(t) = \\left| \\operatorname{atan2}\\!\\big(\\sin(o(t) - \\text{dir}(t)),\\, \\cos(o(t) - \\text{dir}(t))\\big) \\right| \\cdot \\frac{180}{\\pi}",
+      "definition": "Smallest circular angle in [0\u00b0, 180\u00b0] between the direction the player's chest/shoulders are facing (`o`) and the direction their center of mass is moving (`dir`). Quantifies backpedaling (\u03b4 \u2248 180\u00b0), lateral shuffling/strafe (\u03b4 \u2248 90\u00b0), and linear forward sprinting (\u03b4 \u2248 0\u00b0).",
+      "input_columns": [
+        "o",
+        "dir",
+        "s"
+      ],
+      "source_tables": [
+        "combine_tracking.csv",
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv"
+      ],
+      "units": "Degrees (deg) in [0.0, 180.0]",
+      "windowing_and_aggregation": "Computed frame-by-frame for all frames where `s >= 1.0 yd/s` (since `dir` is undefined/noisy when stationary). Summarized via mean and 90th-percentile speed achieved while in strafe/backpedal posture (`\u03b4_\u03b8 > 60\u00b0`).",
+      "missing_data_handling": "Mask frames where `o` or `dir` is null or `s < 1.0 yd/s`.",
+      "leakage_concerns": "None.",
+      "implementation_status": "Documented & Unit-Tested Formula",
+      "validation_and_tests": "Unit test boundary wrapping: e.g., o = 355\u00b0, dir = 5\u00b0 must yield \u03b4_\u03b8 = 10\u00b0, never 350\u00b0."
+    },
+    {
+      "id": "FE-04",
+      "name": "Peak Angular Hip-Turn Velocity & Transition Speed Retention",
+      "category": "Angular & Biomechanical Fluidity",
+      "derivation_type": "Transformed & Aggregated",
+      "formula_latex": "\\omega_{o}(t) = \\frac{\\operatorname{atan2}\\!\\big(\\sin(o(t) - o(t-\\Delta t)),\\, \\cos(o(t) - o(t-\\Delta t))\\big)}{\\Delta t}",
+      "definition": "Instantaneous angular velocity of torso orientation (`o`) in degrees per second during transitions (such as a DB opening their hips from backpedal to sprint or a DL spinning/redirecting).",
+      "input_columns": [
+        "nflId",
+        "frameId",
+        "o",
+        "s"
+      ],
+      "source_tables": [
+        "combine_tracking.csv",
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv"
+      ],
+      "units": "Degrees per second (deg/s)",
+      "windowing_and_aggregation": "Evaluate joint product `|\u03c9_o(t)| * s(t)` during transition phases where `\u03b4_\u03b8` crosses from >120\u00b0 (backpedal) to <30\u00b0 (forward sprint).",
+      "missing_data_handling": "Interpolate at most 1 missing frame; exclude sequences with sensor dropouts.",
+      "leakage_concerns": "None.",
+      "implementation_status": "Documented & Ready for Pipeline Execution",
+      "validation_and_tests": "Verify circular difference bounded by [-1800 deg/s, +1800 deg/s] at 10 Hz."
+    },
+    {
+      "id": "FE-05",
+      "name": "Mass-Adjusted Peak Momentum & Kinetic Power Proxy",
+      "category": "Anthropometric-Kinematic Hybrids",
+      "derivation_type": "Transformed & Joined",
+      "formula_latex": "p_{\\text{max}} = m_{\\text{kg}} \\cdot v_{\\text{max},\\,\\text{m/s}}, \\quad P_{\\text{burst}} = m_{\\text{kg}} \\cdot a_{\\text{m/s}^2}(t) \\cdot v_{\\text{m/s}}(t)",
+      "definition": "Physical linear momentum (kg\u00b7m/s) and instantaneous mechanical power proxy (Watts) combining player body mass from `players.csv` / `combine_results.csv` with 10 Hz velocity and acceleration from `combine_tracking.csv`.",
+      "input_columns": [
+        "weight",
+        "s",
+        "a"
+      ],
+      "source_tables": [
+        "players.csv",
+        "combine_results.csv",
+        "combine_tracking.csv"
+      ],
+      "units": "Momentum: kg\u00b7m/s (using 1 lb = 0.453592 kg, 1 yd = 0.9144 m); Mechanical Power Proxy: Watts (J/s)",
+      "windowing_and_aggregation": "Convert `weight` (lbs -> kg) and `s`, `a` (yd -> m) explicitly before multiplication so physical units are SI-consistent.",
+      "missing_data_handling": "Fallback to `players.csv` weight if `combine_results.csv` weight is missing.",
+      "leakage_concerns": "Use pre-draft Combine weight rather than later veteran roster weight when evaluating pre-draft projection.",
+      "implementation_status": "Documented & Unit-Tested Conversion",
+      "validation_and_tests": "Verify dimensional conversion constants (0.45359237 kg/lb and 0.9144 m/yd)."
+    },
+    {
+      "id": "FE-06",
+      "name": "Position-Group Z-Score & Drill Path Tortuosity Index",
+      "category": "Position-Group Comparisons & Spatial Efficiency",
+      "derivation_type": "Aggregated",
+      "formula_latex": "\\tau_{\\text{path}} = \\frac{\\sum_{t=1}^{T} \\sqrt{(x_t - x_{t-1})^2 + (y_t - y_{t-1})^2}}{\\sqrt{(x_T - x_0)^2 + (y_T - y_0)^2}}, \\quad z_{i,g} = \\frac{x_i - \\mu_g}{\\sigma_g}",
+      "definition": "Ratio of total curvilinear distance traveled to straight-line Euclidean displacement across a drill segment (tortuosity/curvilinearity), standardized via within-position-group (`g` in {WR, TE, DB, OL, DL}) mean and standard deviation.",
+      "input_columns": [
+        "nflId",
+        "position",
+        "x",
+        "y",
+        "dis"
+      ],
+      "source_tables": [
+        "players.csv",
+        "combine_tracking.csv"
+      ],
+      "units": "Tortuosity: dimensionless (>= 1.0); Z-score: standard deviations (SD)",
+      "windowing_and_aggregation": "Compute per drill segment; fit `\u03bc_g` and `\u03c3_g` strictly on training cohort folds within each position group.",
+      "missing_data_handling": "Exclude incomplete drill segments.",
+      "leakage_concerns": "Fit normalization parameters (`\u03bc_g`, `\u03c3_g`) inside cross-validation folds to prevent test-cohort distribution leakage.",
+      "implementation_status": "Documented & Ready for Pipeline Execution",
+      "validation_and_tests": "Triangle inequality guarantees \u03c4_path >= 1.0 for any valid Euclidean trajectory."
+    },
+    {
+      "id": "FE-07",
+      "name": "In-Game Route-Break Velocity Retention & Separation Proxy",
+      "category": "Regular-Season Play Context Outcomes",
+      "derivation_type": "Aggregated (Play-Level Outcome)",
+      "formula_latex": "\\text{VR}_{\\text{route}} = \\frac{\\bar{s}_{[t_{\\text{break}},\\, t_{\\text{break}}+0.5\\text{s}]}}{\\bar{s}_{[t_{\\text{break}}-0.5\\text{s},\\, t_{\\text{break}}]}}, \\quad d_{\\text{sep}}(t) = \\min_{j \\in \\text{Def}} \\sqrt{(x_i(t) - x_j(t))^2 + (y_i(t) - y_j(t))^2}",
+      "definition": "On-field regular-season metric measuring a receiver's (WR/TE) speed retention across a route stem break and Euclidean distance to the nearest opposing defender at `pass_arrived` or break apex.",
+      "input_columns": [
+        "gameId",
+        "playId",
+        "nflId",
+        "routeRan",
+        "x",
+        "y",
+        "s",
+        "dir",
+        "event"
+      ],
+      "source_tables": [
+        "player_play.csv",
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv"
+      ],
+      "units": "Velocity Retention: dimensionless ratio; Separation: yards (yd)",
+      "windowing_and_aggregation": "Filter `player_play.csv` to plays where `routeRan` is a breaking route (e.g., OUT, IN, SLANT, HITCH, COMEBACK, POST, CORNER); aggregate median across a player's season.",
+      "missing_data_handling": "Ignore plays aborted by pre-snap penalty or quarterback sack prior to route break.",
+      "leakage_concerns": "This is a post-draft regular-season performance measure; use strictly as an analytical outcome/dependent variable, never as a pre-draft predictor.",
+      "implementation_status": "Documented & Ready for Pipeline Execution",
+      "validation_and_tests": "Verify all players compared on `d_sep(t)` share the exact same `(gameId, playId, frameId)`."
+    },
+    {
+      "id": "FE-08",
+      "name": "Combine-to-Game Kinematic Transfer Ratio (Functional Play Speed Index)",
+      "category": "Cross-Context Stability",
+      "derivation_type": "Aggregated & Joined",
+      "formula_latex": "\\text{KTR}_{99} = \\frac{Q_{0.99}\\!\\big(s_{\\text{NFL}}(i)\\big)}{Q_{0.99}\\!\\big(s_{\\text{Combine}}(i)\\big)}",
+      "definition": "Ratio of a player's 99th-percentile on-field regular-season speed to their 99th-percentile Combine drill speed, measuring functional speed translation in pads.",
+      "input_columns": [
+        "nflId",
+        "s"
+      ],
+      "source_tables": [
+        "combine_tracking.csv",
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv"
+      ],
+      "units": "Dimensionless ratio (typically 0.85 to 1.05)",
+      "windowing_and_aggregation": "Compute 99th percentile over active play frames (`ball_snap` to `tackle`/`out_of_bounds`) for players with >= 200 tracked play frames.",
+      "missing_data_handling": "Require minimum exposure threshold (>= 200 frames) to stabilize the 99th-percentile estimator.",
+      "leakage_concerns": "Cross-context research metric bridging Combine and NFL tracking.",
+      "implementation_status": "Documented & Ready for Pipeline Execution",
+      "validation_and_tests": "Check sensitivity to minimum snap count thresholds."
+    }
+  ],
+  "official_sources": [
+    {
+      "id": "SRC-01",
+      "title": "NFL Big Data Bowl 2027 \u2014 Official Kaggle Competition Portal",
+      "publisher": "National Football League (NFL) & Kaggle",
+      "url": "https://www.kaggle.com/competitions/nfl-big-data-bowl-2027",
+      "category": "Official Competition Source",
+      "claims_supported": [
+        "Official competition identity (9th annual NFL Big Data Bowl, 2027 edition).",
+        "Research objective: uncovering non-obvious, actionable linkages between 10 Hz NFL Scouting Combine sensor tracking data and future regular-season NFL game performance.",
+        "Focus on five core position groups: WR, TE, DB, OL, and DL.",
+        "Analytical and research-oriented competition format ($100,000 total prize pool across Open Track, University Track, and Grand Prize; deadline January 6, 2027)."
+      ],
+      "verification_status": "Officially documented",
+      "last_verified": "2026-10-25"
+    },
+    {
+      "id": "SRC-02",
+      "title": "Official Competition Dataset Inventory via Kaggle CLI (`nfl-big-data-bowl-2027`)",
+      "publisher": "Kaggle API / Competition Data Endpoint",
+      "url": "https://www.kaggle.com/competitions/nfl-big-data-bowl-2027/data",
+      "category": "Official Competition Files",
+      "claims_supported": [
+        "Exact 9 competition files and byte sizes returned by `kaggle competitions files -c nfl-big-data-bowl-2027`.",
+        "File list: combine_results.csv (41,020 B), combine_tracking.csv (83,788,174 B), game_tracking_2023.csv (335,463,637 B), game_tracking_2024.csv (717,952,893 B), game_tracking_2025.csv (1,022,575,093 B), games.csv (43,174 B), player_career_successes.csv (13,801 B), player_play.csv (146,879,042 B), players.csv (47,301 B)."
+      ],
+      "verification_status": "Verified from data",
+      "last_verified": "2026-10-25"
+    },
+    {
+      "id": "SRC-03",
+      "title": "NFL Football Operations \u2014 Big Data Bowl Innovation Program",
+      "publisher": "NFL Football Operations",
+      "url": "https://operations.nfl.com/programs-initiatives/innovation/big-data-bowl",
+      "category": "Official NFL Source",
+      "claims_supported": [
+        "Next Gen Stats (NGS) 10 Hz RFID player tracking infrastructure and coordinate conventions.",
+        "Program structure connecting sports analytics researchers with NFL club front offices, coaches, and scouting departments."
+      ],
+      "verification_status": "Officially documented",
+      "last_verified": "2026-10-25"
+    },
+    {
+      "id": "SRC-04",
+      "title": "Official Kaggle Public API Documentation",
+      "publisher": "Kaggle Inc.",
+      "url": "https://www.kaggle.com/docs/api",
+      "category": "Official Technical Documentation",
+      "claims_supported": [
+        "Authentication mechanisms (OAuth `kaggle auth login`, `KAGGLE_API_TOKEN`, `~/.kaggle/access_token`, and legacy `~/.kaggle/kaggle.json`).",
+        "Competition rules acceptance requirements and rate-limit / download behavior."
+      ],
+      "verification_status": "Officially documented",
+      "last_verified": "2026-10-25"
+    },
+    {
+      "id": "SRC-05",
+      "title": "Official Kaggle CLI Repository (`kaggle-cli` v2.2.5)",
+      "publisher": "Kaggle Inc. (GitHub)",
+      "url": "https://github.com/Kaggle/kaggle-cli",
+      "category": "Official Technical Documentation",
+      "claims_supported": [
+        "CLI command syntax for `kaggle competitions files` and `kaggle competitions download`.",
+        "Automatic server-side `.csv.zip` archive wrapping and local extraction behavior inspected in `kaggle_api_extended.py`."
+      ],
+      "verification_status": "Officially documented",
+      "last_verified": "2026-10-25"
+    }
+  ],
+  "glossary": [
+    {
+      "term": "10 Hz RFID Sensor Tracking",
+      "category": "Tracking & Biomechanics",
+      "definition": "Ultra-wideband Radio Frequency Identification (RFID) tags embedded in player shoulder pads that broadcast spatial position and kinematic derivatives 10 times per second (every 100 milliseconds / 0.1s).",
+      "source_label": "Officially documented (NFL Football Operations / Next Gen Stats)"
+    },
+    {
+      "term": "3-Cone Drill (L-Drill)",
+      "category": "NFL Scouting Combine",
+      "definition": "Standardized agility test where a prospect sprints 5 yards to a first cone, returns to the start line, sprints back around the first cone, weaves inside and around a third cone set at a 90-degree angle, and finishes around the second cone. Tests braking, hip sink, and tight-radius bend.",
+      "source_label": "Officially documented (NFL Scouting Combine)"
+    },
+    {
+      "term": "20-Yard Short Shuttle (5-10-5)",
+      "category": "NFL Scouting Combine",
+      "definition": "Lateral agility drill in which a prospect starts in a three-point stance, moves 5 yards to one side, touches the line, sprints 10 yards in the opposite direction, touches the line, and sprints 5 yards back through the starting line.",
+      "source_label": "Officially documented (NFL Scouting Combine)"
+    },
+    {
+      "term": "10-Yard Split",
+      "category": "NFL Scouting Combine",
+      "definition": "Elapsed time over the first 10 yards of the 40-yard dash. Widely used by scouts to evaluate initial explosive burst off the line of scrimmage, particularly for offensive and defensive linemen.",
+      "source_label": "Officially documented (NFL Scouting Combine)"
+    },
+    {
+      "term": "Orientation (o) vs. Direction (dir)",
+      "category": "Tracking & Biomechanics",
+      "definition": "`o` measures the angle (0\u00b0\u2013360\u00b0) that a player's chest/shoulder pads are facing, whereas `dir` measures the angle (0\u00b0\u2013360\u00b0) of the player's instantaneous velocity vector. Their circular difference quantifies backpedaling, strafing, and hip-turn decoupling.",
+      "source_label": "Officially documented (NFL Next Gen Stats Schema)"
+    },
+    {
+      "term": "Braking Efficiency / Tangential Deceleration",
+      "category": "Tracking & Biomechanics",
+      "definition": "The rate at which an athlete reduces forward speed (`ds/dt < 0`) over a short time or distance window prior to a cut, while maintaining postural control to transition into re-acceleration.",
+      "source_label": "Inferred from data (Sports Biomechanics Formulation)"
+    },
+    {
+      "term": "Play Direction Standardization",
+      "category": "Data Engineering",
+      "definition": "Coordinate transformation flipping `x -> 120 - x`, `y -> 53.3 - y`, and rotating `o` and `dir` by 180\u00b0 (modulo 360\u00b0) on plays where `playDirection == 'left'`, ensuring all offensive plays move left-to-right.",
+      "source_label": "Officially documented (NFL Big Data Bowl Convention)"
+    },
+    {
+      "term": "Survivorship & Draft-Selection Bias (Collider Bias)",
+      "category": "Statistical Methodology",
+      "definition": "Distortion in estimated relationships between Combine traits and NFL outcomes caused by conditioning on players who were drafted and earned regular-season snaps. Because draft selection itself depends on Combine scores, conditioning on roster survival induces collider stratification.",
+      "source_label": "Officially documented (Causal Inference & Sports Analytics Methodology)"
+    },
+    {
+      "term": "Many-to-Many Join Multiplication Hazard",
+      "category": "Data Engineering",
+      "definition": "Relational error occurring when two tables with multiple rows per entity (such as joining `combine_tracking.csv` directly to `game_tracking_2023.csv` on `nflId` without pre-aggregation, or joining on `playId` without `gameId`) produce a Cartesian product per key.",
+      "source_label": "Verified from data (Relational Data Architecture Principle)"
+    },
+    {
+      "term": "Grain (Table Granularity)",
+      "category": "Data Engineering",
+      "definition": "The real-world atomic entity or observation represented by a single row in a table, uniquely identified by its primary or composite key (e.g., one row per player in `players.csv` vs. one row per player-play-frame in `game_tracking_2023.csv`).",
+      "source_label": "Officially documented (Dimensional Modeling Standard)"
+    }
+  ]
+}

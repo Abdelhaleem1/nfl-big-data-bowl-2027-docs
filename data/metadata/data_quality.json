@@ -1,0 +1,155 @@
+{
+  "metadata_schema_version": "1.0.0",
+  "pipeline_version": "1.0.0",
+  "generated_at_utc": "2026-10-25T17:24:56.481206+00:00",
+  "summary": {
+    "total_tables": 9,
+    "locally_profiled_tables": 0,
+    "uninspected_tables": 9,
+    "large_tracking_files_deferred": [
+      "game_tracking_2023.csv",
+      "game_tracking_2024.csv",
+      "game_tracking_2025.csv"
+    ],
+    "total_findings_and_status_items": 9
+  },
+  "known_structural_hazards": [
+    {
+      "id": "DQ-HAZ-01",
+      "title": "Combine Drill Opt-Out Missingness (Selection Bias)",
+      "affected_tables": [
+        "combine_results.csv",
+        "combine_tracking.csv"
+      ],
+      "evidence_status": "Officially documented",
+      "description": "Prospects frequently opt out of specific Combine drills (e.g., 3-cone, short shuttle, or 40-yard dash) due to training strategy, minor injury, or high projected draft status. Missingness in Combine drills is Missing Not At Random (MNAR).",
+      "mitigation": "Never use naive mean imputation on Combine drill times; model drill participation indicators explicitly or evaluate within drill-complete sub-cohorts."
+    },
+    {
+      "id": "DQ-HAZ-02",
+      "title": "Unsigned Acceleration (`a`) vs. Signed Tangential Deceleration (`ds/dt`)",
+      "affected_tables": [
+        "combine_tracking.csv",
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv"
+      ],
+      "evidence_status": "Officially documented",
+      "description": "In Next Gen Stats 10 Hz tracking files, column `a` represents the non-negative scalar magnitude of the acceleration vector (`a >= 0`). Treating high `a` during braking phases as positive forward acceleration corrupts burst vs. deceleration analyses.",
+      "mitigation": "Derive signed tangential acceleration/deceleration via finite differences of speed (`ds/dt`) or by projecting the acceleration vector onto the motion direction vector (`dir`)."
+    },
+    {
+      "id": "DQ-HAZ-03",
+      "title": "Circular Angle Discontinuity at 0\u00b0 / 360\u00b0 Boundary (`o` and `dir`)",
+      "affected_tables": [
+        "combine_tracking.csv",
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv"
+      ],
+      "evidence_status": "Officially documented",
+      "description": "Orientation (`o`) and direction (`dir`) are recorded in degrees modulo 360. A 2-degree rotation from 359\u00b0 to 1\u00b0 produces a naive arithmetic difference of -358\u00b0.",
+      "mitigation": "Always compute angular differences using circular unwrapping: `atan2(sin(\u03b82 - \u03b81), cos(\u03b82 - \u03b81))`."
+    },
+    {
+      "id": "DQ-HAZ-04",
+      "title": "Play Direction (`left` vs. `right`) Coordinate Inversion",
+      "affected_tables": [
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv"
+      ],
+      "evidence_status": "Officially documented",
+      "description": "Raw stadium coordinates `x` (0\u2013120) and `y` (0\u201353.3) depend on which endzone the offense is attacking (`playDirection`).",
+      "mitigation": "Standardize all plays to move left-to-right (`x_std = 120 - x`, `y_std = 53.3 - y`, `o_std = (o + 180) % 360`, `dir_std = (dir + 180) % 360` when `playDirection == 'left'`)."
+    },
+    {
+      "id": "DQ-HAZ-05",
+      "title": "Frame-Level Many-to-Many Join Explosion",
+      "affected_tables": [
+        "combine_tracking.csv",
+        "player_play.csv",
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv"
+      ],
+      "evidence_status": "Verified from data",
+      "description": "Joining `combine_tracking.csv` directly to `game_tracking_YYYY.csv` on `nflId`, or joining on `playId` without `gameId`, multiplies rows by thousands per player.",
+      "mitigation": "Aggregate frame-level tables to player-drill or player-play summaries prior to cross-domain joins."
+    }
+  ],
+  "table_findings": [
+    {
+      "table_name": "combine_results.csv",
+      "column_name": "(Table-Level)",
+      "anomaly_type": "Pending Local CSV Inspection",
+      "severity": "Unverified",
+      "evidence_status": "Unverified",
+      "description": "`combine_results.csv` (40.1 KB) is cataloged from the official Kaggle CLI listing but has not yet been downloaded into `data/raw/` for row-level profiling."
+    },
+    {
+      "table_name": "combine_tracking.csv",
+      "column_name": "(Table-Level)",
+      "anomaly_type": "Pending Local CSV Inspection",
+      "severity": "Unverified",
+      "evidence_status": "Unverified",
+      "description": "`combine_tracking.csv` (79.91 MB) is cataloged from the official Kaggle CLI listing but has not yet been downloaded into `data/raw/` for row-level profiling."
+    },
+    {
+      "table_name": "game_tracking_2023.csv",
+      "column_name": "(Table-Level)",
+      "anomaly_type": "Pending Local CSV Inspection",
+      "severity": "Unverified",
+      "evidence_status": "Unverified",
+      "description": "`game_tracking_2023.csv` (319.92 MB) is cataloged from the official Kaggle CLI listing but has not yet been downloaded into `data/raw/` for row-level profiling."
+    },
+    {
+      "table_name": "game_tracking_2024.csv",
+      "column_name": "(Table-Level)",
+      "anomaly_type": "Pending Local CSV Inspection",
+      "severity": "Unverified",
+      "evidence_status": "Unverified",
+      "description": "`game_tracking_2024.csv` (684.69 MB) is cataloged from the official Kaggle CLI listing but has not yet been downloaded into `data/raw/` for row-level profiling."
+    },
+    {
+      "table_name": "game_tracking_2025.csv",
+      "column_name": "(Table-Level)",
+      "anomaly_type": "Pending Local CSV Inspection",
+      "severity": "Unverified",
+      "evidence_status": "Unverified",
+      "description": "`game_tracking_2025.csv` (975.20 MB) is cataloged from the official Kaggle CLI listing but has not yet been downloaded into `data/raw/` for row-level profiling."
+    },
+    {
+      "table_name": "games.csv",
+      "column_name": "(Table-Level)",
+      "anomaly_type": "Pending Local CSV Inspection",
+      "severity": "Unverified",
+      "evidence_status": "Unverified",
+      "description": "`games.csv` (42.2 KB) is cataloged from the official Kaggle CLI listing but has not yet been downloaded into `data/raw/` for row-level profiling."
+    },
+    {
+      "table_name": "player_career_successes.csv",
+      "column_name": "(Table-Level)",
+      "anomaly_type": "Pending Local CSV Inspection",
+      "severity": "Unverified",
+      "evidence_status": "Unverified",
+      "description": "`player_career_successes.csv` (13.5 KB) is cataloged from the official Kaggle CLI listing but has not yet been downloaded into `data/raw/` for row-level profiling."
+    },
+    {
+      "table_name": "player_play.csv",
+      "column_name": "(Table-Level)",
+      "anomaly_type": "Pending Local CSV Inspection",
+      "severity": "Unverified",
+      "evidence_status": "Unverified",
+      "description": "`player_play.csv` (140.07 MB) is cataloged from the official Kaggle CLI listing but has not yet been downloaded into `data/raw/` for row-level profiling."
+    },
+    {
+      "table_name": "players.csv",
+      "column_name": "(Table-Level)",
+      "anomaly_type": "Pending Local CSV Inspection",
+      "severity": "Unverified",
+      "evidence_status": "Unverified",
+      "description": "`players.csv` (46.2 KB) is cataloged from the official Kaggle CLI listing but has not yet been downloaded into `data/raw/` for row-level profiling."
+    }
+  ]
+}

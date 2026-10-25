@@ -1,0 +1,2887 @@
+{
+  "metadata_schema_version": "1.0.0",
+  "pipeline_version": "1.0.0",
+  "generated_at_utc": "2026-10-25T17:24:56.477207+00:00",
+  "total_documented_columns": 88,
+  "unique_column_names": 41,
+  "columns": [
+    {
+      "table_name": "combine_results.csv",
+      "column_index": 1,
+      "column_name": "nflId",
+      "physical_type": "int64 (Unverified locally)",
+      "semantic_type": "Primary / Foreign Identifier",
+      "meaning": "Unique identifier linking a Combine prospect to players.csv and combine_tracking.csv.",
+      "evidence_status": "Inferred from data",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Identifier",
+      "valid_range_or_domain": "Positive integer",
+      "key_role": "Primary Key / Foreign Key (Candidate)",
+      "relationships": [
+        "players.csv (nflId)",
+        "combine_tracking.csv (nflId)",
+        "player_career_successes.csv (nflId)"
+      ],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Joining traditional stopwatch drill scores to 10 Hz Combine sensor kinematics and NFL outcomes."
+      ],
+      "limitations": "Exact primary key column name (e.g. nflId vs player_id) must be verified from local CSV header.",
+      "tables_sharing_column_name": [
+        "combine_results.csv",
+        "combine_tracking.csv",
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv",
+        "player_career_successes.csv",
+        "player_play.csv",
+        "players.csv"
+      ],
+      "cross_table_disambiguation": null
+    },
+    {
+      "table_name": "combine_results.csv",
+      "column_index": 2,
+      "column_name": "combineYear",
+      "physical_type": "int64 (Unverified locally)",
+      "semantic_type": "Temporal Year",
+      "meaning": "Calendar year in which the prospect participated in the NFL Scouting Combine.",
+      "evidence_status": "Inferred from data",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Year",
+      "valid_range_or_domain": "Typically 2020 - 2025",
+      "key_role": "Temporal Cohort Key",
+      "relationships": [],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Ensuring strict temporal ordering (Combine year <= NFL regular-season year) to prevent data leakage."
+      ],
+      "limitations": "Exact column name and cohort year range require local header verification.",
+      "tables_sharing_column_name": [
+        "combine_results.csv"
+      ],
+      "cross_table_disambiguation": null
+    },
+    {
+      "table_name": "combine_results.csv",
+      "column_index": 3,
+      "column_name": "position",
+      "physical_type": "string (Unverified locally)",
+      "semantic_type": "Categorical (Position Group)",
+      "meaning": "Prospect position group at the Scouting Combine (WR, TE, DB, OL, DL).",
+      "evidence_status": "Officially documented",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Position Code",
+      "valid_range_or_domain": "WR, TE, DB, OL, DL (or granular sub-positions)",
+      "key_role": "Cohort Stratification Key",
+      "relationships": [
+        "players.csv (position)"
+      ],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Comparing Combine drill results within position groups."
+      ],
+      "limitations": "Verify if prospects changed positions between Combine and NFL roster.",
+      "tables_sharing_column_name": [
+        "combine_results.csv",
+        "players.csv"
+      ],
+      "cross_table_disambiguation": "Appears in both `players.csv` (NFL biographical position) and `combine_results.csv` (Combine testing position group). Verify whether prospects changed position designations between pre-draft Combine and NFL roster."
+    },
+    {
+      "table_name": "combine_results.csv",
+      "column_index": 4,
+      "column_name": "fortyYardDash",
+      "physical_type": "float64 (Unverified locally)",
+      "semantic_type": "Stopwatch Drill Time",
+      "meaning": "Official 40-yard dash time in seconds.",
+      "evidence_status": "Officially documented",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Seconds (s)",
+      "valid_range_or_domain": "4.20 to 5.80 s",
+      "key_role": "Baseline Scouting Metric",
+      "relationships": [
+        "Compare with 40-yard dash tracking frames in combine_tracking.csv"
+      ],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Baseline benchmark to test whether 10 Hz acceleration/velocity curves add incremental predictive value over final stopwatch time."
+      ],
+      "limitations": "Exact column casing (e.g., fortyYardDash vs forty_yd_dash) requires local CSV inspection. High missingness is common for prospects who opt out of specific drills.",
+      "tables_sharing_column_name": [
+        "combine_results.csv"
+      ],
+      "cross_table_disambiguation": null
+    },
+    {
+      "table_name": "combine_results.csv",
+      "column_index": 5,
+      "column_name": "tenYardSplit",
+      "physical_type": "float64 (Unverified locally)",
+      "semantic_type": "Stopwatch Drill Time",
+      "meaning": "Initial 10-yard split time during the 40-yard dash, measuring initial burst off the line.",
+      "evidence_status": "Inferred from data",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Seconds (s)",
+      "valid_range_or_domain": "1.40 to 2.00 s",
+      "key_role": "Baseline Scouting Metric",
+      "relationships": [],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Crucial baseline for OL/DL and pass-rush burst evaluation."
+      ],
+      "limitations": "Exact column name unverified locally.",
+      "tables_sharing_column_name": [
+        "combine_results.csv"
+      ],
+      "cross_table_disambiguation": null
+    },
+    {
+      "table_name": "combine_results.csv",
+      "column_index": 6,
+      "column_name": "verticalJump",
+      "physical_type": "float64 (Unverified locally)",
+      "semantic_type": "Explosive Power Metric",
+      "meaning": "Maximum standing vertical jump height.",
+      "evidence_status": "Officially documented",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Inches (in)",
+      "valid_range_or_domain": "22.0 to 46.0 in",
+      "key_role": "Baseline Scouting Metric",
+      "relationships": [],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Lower-body explosive impulse proxy."
+      ],
+      "limitations": "Exact column name and opt-out missingness rate unverified locally.",
+      "tables_sharing_column_name": [
+        "combine_results.csv"
+      ],
+      "cross_table_disambiguation": null
+    },
+    {
+      "table_name": "combine_results.csv",
+      "column_index": 7,
+      "column_name": "broadJump",
+      "physical_type": "float64 (Unverified locally)",
+      "semantic_type": "Explosive Power Metric",
+      "meaning": "Standing broad (horizontal) jump distance.",
+      "evidence_status": "Officially documented",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Inches (in)",
+      "valid_range_or_domain": "90 to 145 in",
+      "key_role": "Baseline Scouting Metric",
+      "relationships": [],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Horizontal force projection proxy."
+      ],
+      "limitations": "Exact column name unverified locally.",
+      "tables_sharing_column_name": [
+        "combine_results.csv"
+      ],
+      "cross_table_disambiguation": null
+    },
+    {
+      "table_name": "combine_results.csv",
+      "column_index": 8,
+      "column_name": "threeConeDrill",
+      "physical_type": "float64 (Unverified locally)",
+      "semantic_type": "Agility Drill Time",
+      "meaning": "Official 3-cone (L-drill) completion time measuring change-of-direction agility and hip bend.",
+      "evidence_status": "Officially documented",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Seconds (s)",
+      "valid_range_or_domain": "6.20 to 8.50 s",
+      "key_role": "Baseline Scouting Metric",
+      "relationships": [
+        "Compare against 3-cone tracking trajectory in combine_tracking.csv"
+      ],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Baseline agility benchmark for decomposing deceleration vs. re-acceleration around cones."
+      ],
+      "limitations": "High opt-out missingness is typical in modern Combines; verify selection bias.",
+      "tables_sharing_column_name": [
+        "combine_results.csv"
+      ],
+      "cross_table_disambiguation": null
+    },
+    {
+      "table_name": "combine_results.csv",
+      "column_index": 9,
+      "column_name": "twentyYardShuttle",
+      "physical_type": "float64 (Unverified locally)",
+      "semantic_type": "Agility Drill Time",
+      "meaning": "Official 20-yard short shuttle (5-10-5) time measuring lateral redirection.",
+      "evidence_status": "Officially documented",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Seconds (s)",
+      "valid_range_or_domain": "3.80 to 5.20 s",
+      "key_role": "Baseline Scouting Metric",
+      "relationships": [
+        "Compare against short shuttle tracking frames in combine_tracking.csv"
+      ],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Evaluating braking efficiency and 180-degree cut mechanics."
+      ],
+      "limitations": "Exact column name unverified locally.",
+      "tables_sharing_column_name": [
+        "combine_results.csv"
+      ],
+      "cross_table_disambiguation": null
+    },
+    {
+      "table_name": "combine_results.csv",
+      "column_index": 10,
+      "column_name": "benchPress",
+      "physical_type": "int64 or float64 (Unverified locally)",
+      "semantic_type": "Strength Metric",
+      "meaning": "Number of 225-lb bench press repetitions completed.",
+      "evidence_status": "Inferred from data",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Repetitions (count)",
+      "valid_range_or_domain": "1 to 45 reps",
+      "key_role": "Baseline Scouting Metric",
+      "relationships": [],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Upper-body muscular endurance covariate (especially for OL/DL/TE)."
+      ],
+      "limitations": "Unverified locally.",
+      "tables_sharing_column_name": [
+        "combine_results.csv"
+      ],
+      "cross_table_disambiguation": null
+    },
+    {
+      "table_name": "combine_tracking.csv",
+      "column_index": 1,
+      "column_name": "nflId",
+      "physical_type": "int64 (Unverified locally)",
+      "semantic_type": "Foreign Identifier",
+      "meaning": "Unique identifier of the Combine prospect wearing the RFID sensor.",
+      "evidence_status": "Officially documented",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Identifier",
+      "valid_range_or_domain": "Positive integer",
+      "key_role": "Part of Composite Primary Key / Foreign Key",
+      "relationships": [
+        "players.csv (nflId)",
+        "combine_results.csv (nflId)",
+        "player_career_successes.csv (nflId)"
+      ],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Grouping 10 Hz drill trajectories by prospect."
+      ],
+      "limitations": "Unverified locally.",
+      "tables_sharing_column_name": [
+        "combine_results.csv",
+        "combine_tracking.csv",
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv",
+        "player_career_successes.csv",
+        "player_play.csv",
+        "players.csv"
+      ],
+      "cross_table_disambiguation": null
+    },
+    {
+      "table_name": "combine_tracking.csv",
+      "column_index": 2,
+      "column_name": "drillType",
+      "physical_type": "string (Unverified locally)",
+      "semantic_type": "Categorical (Combine Drill)",
+      "meaning": "Identifier or name of the Scouting Combine timed workout or positional drill being performed.",
+      "evidence_status": "Officially documented",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Drill Category",
+      "valid_range_or_domain": "Timed drills (40-yd dash, 3-cone, shuttle) and position-specific on-field drills",
+      "key_role": "Part of Composite Primary Key / Drill Filter",
+      "relationships": [
+        "combine_results.csv"
+      ],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Segmenting tracking time-series by drill mechanics."
+      ],
+      "limitations": "Exact column name (e.g. drillType, drill_id, event) and domain values require local inspection.",
+      "tables_sharing_column_name": [
+        "combine_tracking.csv"
+      ],
+      "cross_table_disambiguation": null
+    },
+    {
+      "table_name": "combine_tracking.csv",
+      "column_index": 3,
+      "column_name": "frameId",
+      "physical_type": "int64 (Unverified locally)",
+      "semantic_type": "Temporal Frame Sequence",
+      "meaning": "Sequential 10 Hz frame counter (0.1-second intervals) within a prospect's drill attempt.",
+      "evidence_status": "Officially documented",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Frame index (10 Hz = 0.1 s/frame)",
+      "valid_range_or_domain": "1 to N frames per drill",
+      "key_role": "Part of Composite Primary Key / Temporal Ordering",
+      "relationships": [],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Time-series alignment, finite-difference kinematic validation, and phase segmentation."
+      ],
+      "limitations": "Verify whether multiple attempts per drill have an additional attemptId column.",
+      "tables_sharing_column_name": [
+        "combine_tracking.csv",
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv"
+      ],
+      "cross_table_disambiguation": null
+    },
+    {
+      "table_name": "combine_tracking.csv",
+      "column_index": 4,
+      "column_name": "time",
+      "physical_type": "timestamp / string (Unverified locally)",
+      "semantic_type": "Timestamp",
+      "meaning": "High-resolution timestamp of the 10 Hz sensor observation.",
+      "evidence_status": "Inferred from data",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "ISO-8601 Timestamp (0.1s resolution)",
+      "valid_range_or_domain": "Valid timestamp",
+      "key_role": "Temporal Attribute",
+      "relationships": [],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Verifying uniform 100ms sampling intervals and detecting dropped frames."
+      ],
+      "limitations": "Unverified locally.",
+      "tables_sharing_column_name": [
+        "combine_tracking.csv",
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv"
+      ],
+      "cross_table_disambiguation": null
+    },
+    {
+      "table_name": "combine_tracking.csv",
+      "column_index": 5,
+      "column_name": "x",
+      "physical_type": "float64 (Unverified locally)",
+      "semantic_type": "Spatial Coordinate",
+      "meaning": "Prospect coordinate along the long axis of the field during the Combine drill.",
+      "evidence_status": "Officially documented",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Yards (yd) \u2014 verify convention locally",
+      "valid_range_or_domain": "0.0 to 120.0 yd",
+      "key_role": "Spatial Feature",
+      "relationships": [],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Computing path length, curvature, and split distances."
+      ],
+      "limitations": "Verify coordinate origin and axis orientation across different Combine drills before combining with game tracking.",
+      "tables_sharing_column_name": [
+        "combine_tracking.csv",
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv"
+      ],
+      "cross_table_disambiguation": "Same field name appears in both `combine_tracking.csv` (Combine drill coordinate/kinematic space) and `game_tracking_2023/2024/2025.csv` (120-yard NFL game stadium coordinate space). Do not equate raw coordinates across Combine drills and NFL games without drill-specific frame anchoring."
+    },
+    {
+      "table_name": "combine_tracking.csv",
+      "column_index": 6,
+      "column_name": "y",
+      "physical_type": "float64 (Unverified locally)",
+      "semantic_type": "Spatial Coordinate",
+      "meaning": "Prospect coordinate along the short (sideline-to-sideline) axis of the field.",
+      "evidence_status": "Officially documented",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Yards (yd) \u2014 verify convention locally",
+      "valid_range_or_domain": "0.0 to 53.3 yd",
+      "key_role": "Spatial Feature",
+      "relationships": [],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Measuring lateral deviation, path efficiency, and cut radius."
+      ],
+      "limitations": "Unverified locally.",
+      "tables_sharing_column_name": [
+        "combine_tracking.csv",
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv"
+      ],
+      "cross_table_disambiguation": "Same field name appears in both `combine_tracking.csv` (Combine drill coordinate/kinematic space) and `game_tracking_2023/2024/2025.csv` (120-yard NFL game stadium coordinate space). Do not equate raw coordinates across Combine drills and NFL games without drill-specific frame anchoring."
+    },
+    {
+      "table_name": "combine_tracking.csv",
+      "column_index": 7,
+      "column_name": "s",
+      "physical_type": "float64 (Unverified locally)",
+      "semantic_type": "Kinematic Velocity",
+      "meaning": "Instantaneous scalar speed of the prospect.",
+      "evidence_status": "Officially documented",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Yards per second (yd/s)",
+      "valid_range_or_domain": "0.0 to ~12.5 yd/s",
+      "key_role": "Kinematic Feature",
+      "relationships": [
+        "Comparable to s in game_tracking_2023/2024/2025.csv"
+      ],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Peak velocity, velocity maintenance, and speed drop-off during direction changes."
+      ],
+      "limitations": "Verify proprietary sensor smoothing filter vs raw finite-difference displacement.",
+      "tables_sharing_column_name": [
+        "combine_tracking.csv",
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv"
+      ],
+      "cross_table_disambiguation": "Same field name appears in both `combine_tracking.csv` (Combine drill coordinate/kinematic space) and `game_tracking_2023/2024/2025.csv` (120-yard NFL game stadium coordinate space). Do not equate raw coordinates across Combine drills and NFL games without drill-specific frame anchoring."
+    },
+    {
+      "table_name": "combine_tracking.csv",
+      "column_index": 8,
+      "column_name": "a",
+      "physical_type": "float64 (Unverified locally)",
+      "semantic_type": "Kinematic Acceleration",
+      "meaning": "Instantaneous scalar acceleration magnitude (or signed tangential acceleration; verify locally).",
+      "evidence_status": "Officially documented",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Yards per second squared (yd/s^2)",
+      "valid_range_or_domain": "0.0 to ~15.0 yd/s^2",
+      "key_role": "Kinematic Feature",
+      "relationships": [
+        "Comparable to a in game_tracking_2023/2024/2025.csv"
+      ],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Peak burst off the line, braking deceleration derived via ds/dt, and jerk calculation."
+      ],
+      "limitations": "In standard Next Gen Stats, `a` is non-negative magnitude; tangential acceleration/deceleration must be checked via finite differences of `s`.",
+      "tables_sharing_column_name": [
+        "combine_tracking.csv",
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv"
+      ],
+      "cross_table_disambiguation": "Same field name appears in both `combine_tracking.csv` (Combine drill coordinate/kinematic space) and `game_tracking_2023/2024/2025.csv` (120-yard NFL game stadium coordinate space). Do not equate raw coordinates across Combine drills and NFL games without drill-specific frame anchoring."
+    },
+    {
+      "table_name": "combine_tracking.csv",
+      "column_index": 9,
+      "column_name": "dis",
+      "physical_type": "float64 (Unverified locally)",
+      "semantic_type": "Kinematic Displacement",
+      "meaning": "Distance traveled from the previous 10 Hz frame.",
+      "evidence_status": "Inferred from data",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Yards (yd)",
+      "valid_range_or_domain": "0.0 to ~1.5 yd",
+      "key_role": "Kinematic Feature",
+      "relationships": [],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Cumulative drill path length and sensor glitch detection."
+      ],
+      "limitations": "Unverified locally.",
+      "tables_sharing_column_name": [
+        "combine_tracking.csv",
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv"
+      ],
+      "cross_table_disambiguation": null
+    },
+    {
+      "table_name": "combine_tracking.csv",
+      "column_index": 10,
+      "column_name": "o",
+      "physical_type": "float64 (Unverified locally)",
+      "semantic_type": "Angular Orientation",
+      "meaning": "Prospect body orientation angle (facing direction).",
+      "evidence_status": "Officially documented",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Degrees (0 to 360)",
+      "valid_range_or_domain": "[0.0, 360.0]",
+      "key_role": "Angular Feature",
+      "relationships": [],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Hip turn velocity, backpedal-to-sprint transition mechanics for DBs, and torso-path divergence."
+      ],
+      "limitations": "Circular angle wrapping at 0/360 degrees must be handled via unwrapped radians or trigonometric components.",
+      "tables_sharing_column_name": [
+        "combine_tracking.csv",
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv"
+      ],
+      "cross_table_disambiguation": "Same field name appears in both `combine_tracking.csv` (Combine drill coordinate/kinematic space) and `game_tracking_2023/2024/2025.csv` (120-yard NFL game stadium coordinate space). Do not equate raw coordinates across Combine drills and NFL games without drill-specific frame anchoring."
+    },
+    {
+      "table_name": "combine_tracking.csv",
+      "column_index": 11,
+      "column_name": "dir",
+      "physical_type": "float64 (Unverified locally)",
+      "semantic_type": "Angular Motion Direction",
+      "meaning": "Angle of the prospect's instantaneous velocity vector.",
+      "evidence_status": "Officially documented",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Degrees (0 to 360)",
+      "valid_range_or_domain": "[0.0, 360.0]",
+      "key_role": "Angular Feature",
+      "relationships": [],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Path curvature, cut angle sharpness, and orientation-direction divergence (|o - dir|)."
+      ],
+      "limitations": "Noisy when instantaneous speed `s` approaches zero.",
+      "tables_sharing_column_name": [
+        "combine_tracking.csv",
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv"
+      ],
+      "cross_table_disambiguation": "Same field name appears in both `combine_tracking.csv` (Combine drill coordinate/kinematic space) and `game_tracking_2023/2024/2025.csv` (120-yard NFL game stadium coordinate space). Do not equate raw coordinates across Combine drills and NFL games without drill-specific frame anchoring."
+    },
+    {
+      "table_name": "combine_tracking.csv",
+      "column_index": 12,
+      "column_name": "event",
+      "physical_type": "string (Unverified locally)",
+      "semantic_type": "Event Annotation",
+      "meaning": "Discrete drill event marker (e.g. drill start, cone pass, cut, finish) on specific frames.",
+      "evidence_status": "Inferred from data",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Categorical text",
+      "valid_range_or_domain": "Sparse frame labels (mostly null on intermediate frames)",
+      "key_role": "Phase Segmentation Marker",
+      "relationships": [],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Segmenting drills into start burst, steady sprint, deceleration, and cone turn phases."
+      ],
+      "limitations": "High null proportion (~90%+) is normal and expected for frame-level event annotations.",
+      "tables_sharing_column_name": [
+        "combine_tracking.csv",
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv"
+      ],
+      "cross_table_disambiguation": null
+    },
+    {
+      "table_name": "game_tracking_2023.csv",
+      "column_index": 1,
+      "column_name": "gameId",
+      "physical_type": "int64 (Unverified locally)",
+      "semantic_type": "Foreign Identifier",
+      "meaning": "Unique game identifier for the 2023 NFL regular season.",
+      "evidence_status": "Inferred from data",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Identifier",
+      "valid_range_or_domain": "2023 season game IDs",
+      "key_role": "Part of Composite Primary Key / Foreign Key",
+      "relationships": [
+        "games.csv (gameId)",
+        "player_play.csv (gameId)"
+      ],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Joining 10 Hz frame trajectories to game metadata."
+      ],
+      "limitations": "Large file (2023); use streaming or chunked profiling rather than in-memory pandas load.",
+      "tables_sharing_column_name": [
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv",
+        "games.csv",
+        "player_play.csv"
+      ],
+      "cross_table_disambiguation": null
+    },
+    {
+      "table_name": "game_tracking_2023.csv",
+      "column_index": 2,
+      "column_name": "playId",
+      "physical_type": "int64 (Unverified locally)",
+      "semantic_type": "Play Identifier",
+      "meaning": "Play identifier within `gameId`.",
+      "evidence_status": "Inferred from data",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Identifier",
+      "valid_range_or_domain": "Positive integer",
+      "key_role": "Part of Composite Primary Key / Foreign Key (with gameId)",
+      "relationships": [
+        "player_play.csv (gameId, playId)"
+      ],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Grouping frame sequences by individual play."
+      ],
+      "limitations": "Always join with `gameId` + `playId`.",
+      "tables_sharing_column_name": [
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv",
+        "player_play.csv"
+      ],
+      "cross_table_disambiguation": null
+    },
+    {
+      "table_name": "game_tracking_2023.csv",
+      "column_index": 3,
+      "column_name": "nflId",
+      "physical_type": "float64 or int64 (Unverified locally)",
+      "semantic_type": "Foreign Identifier",
+      "meaning": "Player identifier (potentially nullable if football tracking rows are included).",
+      "evidence_status": "Inferred from data",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Identifier",
+      "valid_range_or_domain": "Positive integer (or NA for ball)",
+      "key_role": "Part of Composite Primary Key / Foreign Key",
+      "relationships": [
+        "players.csv (nflId)",
+        "player_play.csv (gameId, playId, nflId)",
+        "combine_tracking.csv (nflId)"
+      ],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Comparing a player's in-game 10 Hz movement envelope against their pre-draft Combine tracking."
+      ],
+      "limitations": "Verify whether football rows exist with null `nflId`.",
+      "tables_sharing_column_name": [
+        "combine_results.csv",
+        "combine_tracking.csv",
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv",
+        "player_career_successes.csv",
+        "player_play.csv",
+        "players.csv"
+      ],
+      "cross_table_disambiguation": null
+    },
+    {
+      "table_name": "game_tracking_2023.csv",
+      "column_index": 4,
+      "column_name": "frameId",
+      "physical_type": "int64 (Unverified locally)",
+      "semantic_type": "Temporal Frame Sequence",
+      "meaning": "10 Hz frame sequence number (100 ms intervals) within a play.",
+      "evidence_status": "Officially documented",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Frame index (0.1 s)",
+      "valid_range_or_domain": "1 to ~200",
+      "key_role": "Part of Composite Primary Key",
+      "relationships": [],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Synchronizing all tracked players on the field at the exact same 0.1s instant."
+      ],
+      "limitations": "Unverified locally.",
+      "tables_sharing_column_name": [
+        "combine_tracking.csv",
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv"
+      ],
+      "cross_table_disambiguation": null
+    },
+    {
+      "table_name": "game_tracking_2023.csv",
+      "column_index": 5,
+      "column_name": "time",
+      "physical_type": "string (Unverified locally)",
+      "semantic_type": "Timestamp",
+      "meaning": "UTC or Eastern timestamp of the tracking frame at 0.1s precision.",
+      "evidence_status": "Inferred from data",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "ISO Timestamp",
+      "valid_range_or_domain": "2023 season timestamps",
+      "key_role": "Temporal Attribute",
+      "relationships": [],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Temporal continuity checks."
+      ],
+      "limitations": "Unverified locally.",
+      "tables_sharing_column_name": [
+        "combine_tracking.csv",
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv"
+      ],
+      "cross_table_disambiguation": null
+    },
+    {
+      "table_name": "game_tracking_2023.csv",
+      "column_index": 6,
+      "column_name": "playDirection",
+      "physical_type": "string (Unverified locally)",
+      "semantic_type": "Spatial Coordinate Convention",
+      "meaning": "Offensive team marching direction ('left' or 'right') on the television broadcast view.",
+      "evidence_status": "Inferred from data",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Direction Category",
+      "valid_range_or_domain": "{'left', 'right'}",
+      "key_role": "Coordinate Standardization Key",
+      "relationships": [],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Flipping x, y, o, and dir when playDirection == 'left' so all plays run left-to-right."
+      ],
+      "limitations": "Failing to standardize by `playDirection` invalidates directional coordinate and angle features.",
+      "tables_sharing_column_name": [
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv"
+      ],
+      "cross_table_disambiguation": null
+    },
+    {
+      "table_name": "game_tracking_2023.csv",
+      "column_index": 7,
+      "column_name": "x",
+      "physical_type": "float64 (Unverified locally)",
+      "semantic_type": "Spatial Coordinate",
+      "meaning": "Player position along the 120-yard long axis of the stadium field.",
+      "evidence_status": "Officially documented",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Yards (yd)",
+      "valid_range_or_domain": "0.0 to 120.0 yd",
+      "key_role": "Spatial Feature",
+      "relationships": [],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Computing downfield depth, separation distance, and line-of-scrimmage penetration."
+      ],
+      "limitations": "Unverified locally.",
+      "tables_sharing_column_name": [
+        "combine_tracking.csv",
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv"
+      ],
+      "cross_table_disambiguation": "Same field name appears in both `combine_tracking.csv` (Combine drill coordinate/kinematic space) and `game_tracking_2023/2024/2025.csv` (120-yard NFL game stadium coordinate space). Do not equate raw coordinates across Combine drills and NFL games without drill-specific frame anchoring."
+    },
+    {
+      "table_name": "game_tracking_2023.csv",
+      "column_index": 8,
+      "column_name": "y",
+      "physical_type": "float64 (Unverified locally)",
+      "semantic_type": "Spatial Coordinate",
+      "meaning": "Player position along the 53.3-yard width of the field.",
+      "evidence_status": "Officially documented",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Yards (yd)",
+      "valid_range_or_domain": "0.0 to 53.3 yd",
+      "key_role": "Spatial Feature",
+      "relationships": [],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Measuring lateral leverage, boundary proximity, and route width."
+      ],
+      "limitations": "Unverified locally.",
+      "tables_sharing_column_name": [
+        "combine_tracking.csv",
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv"
+      ],
+      "cross_table_disambiguation": "Same field name appears in both `combine_tracking.csv` (Combine drill coordinate/kinematic space) and `game_tracking_2023/2024/2025.csv` (120-yard NFL game stadium coordinate space). Do not equate raw coordinates across Combine drills and NFL games without drill-specific frame anchoring."
+    },
+    {
+      "table_name": "game_tracking_2023.csv",
+      "column_index": 9,
+      "column_name": "s",
+      "physical_type": "float64 (Unverified locally)",
+      "semantic_type": "Kinematic Velocity",
+      "meaning": "Instantaneous player speed in yards per second.",
+      "evidence_status": "Officially documented",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Yards per second (yd/s)",
+      "valid_range_or_domain": "0.0 to ~12.0 yd/s",
+      "key_role": "Kinematic Feature",
+      "relationships": [
+        "Compare with combine_tracking.csv (s)"
+      ],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Evaluating functional play speed vs. Combine underwear-olympics top speed."
+      ],
+      "limitations": "Unverified locally.",
+      "tables_sharing_column_name": [
+        "combine_tracking.csv",
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv"
+      ],
+      "cross_table_disambiguation": "Same field name appears in both `combine_tracking.csv` (Combine drill coordinate/kinematic space) and `game_tracking_2023/2024/2025.csv` (120-yard NFL game stadium coordinate space). Do not equate raw coordinates across Combine drills and NFL games without drill-specific frame anchoring."
+    },
+    {
+      "table_name": "game_tracking_2023.csv",
+      "column_index": 10,
+      "column_name": "a",
+      "physical_type": "float64 (Unverified locally)",
+      "semantic_type": "Kinematic Acceleration",
+      "meaning": "Instantaneous acceleration magnitude in yards per second squared.",
+      "evidence_status": "Officially documented",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Yards per second squared (yd/s^2)",
+      "valid_range_or_domain": "0.0 to ~15.0 yd/s^2",
+      "key_role": "Kinematic Feature",
+      "relationships": [
+        "Compare with combine_tracking.csv (a)"
+      ],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Measuring snap burst (first 0.5s after snap) and deceleration into route breaks."
+      ],
+      "limitations": "Unverified locally.",
+      "tables_sharing_column_name": [
+        "combine_tracking.csv",
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv"
+      ],
+      "cross_table_disambiguation": "Same field name appears in both `combine_tracking.csv` (Combine drill coordinate/kinematic space) and `game_tracking_2023/2024/2025.csv` (120-yard NFL game stadium coordinate space). Do not equate raw coordinates across Combine drills and NFL games without drill-specific frame anchoring."
+    },
+    {
+      "table_name": "game_tracking_2023.csv",
+      "column_index": 11,
+      "column_name": "dis",
+      "physical_type": "float64 (Unverified locally)",
+      "semantic_type": "Kinematic Displacement",
+      "meaning": "Distance traveled since the preceding 10 Hz frame.",
+      "evidence_status": "Inferred from data",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Yards (yd)",
+      "valid_range_or_domain": "0.0 to ~1.5 yd",
+      "key_role": "Kinematic Feature",
+      "relationships": [],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Play workload distance."
+      ],
+      "limitations": "Unverified locally.",
+      "tables_sharing_column_name": [
+        "combine_tracking.csv",
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv"
+      ],
+      "cross_table_disambiguation": null
+    },
+    {
+      "table_name": "game_tracking_2023.csv",
+      "column_index": 12,
+      "column_name": "o",
+      "physical_type": "float64 (Unverified locally)",
+      "semantic_type": "Angular Orientation",
+      "meaning": "Player shoulder-pad orientation angle in degrees (0-360).",
+      "evidence_status": "Officially documented",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Degrees (deg)",
+      "valid_range_or_domain": "[0.0, 360.0]",
+      "key_role": "Angular Feature",
+      "relationships": [
+        "Compare with combine_tracking.csv (o)"
+      ],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Evaluating DB hip-flip fluid mechanics and OL pass-set squareness."
+      ],
+      "limitations": "Unverified locally.",
+      "tables_sharing_column_name": [
+        "combine_tracking.csv",
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv"
+      ],
+      "cross_table_disambiguation": "Same field name appears in both `combine_tracking.csv` (Combine drill coordinate/kinematic space) and `game_tracking_2023/2024/2025.csv` (120-yard NFL game stadium coordinate space). Do not equate raw coordinates across Combine drills and NFL games without drill-specific frame anchoring."
+    },
+    {
+      "table_name": "game_tracking_2023.csv",
+      "column_index": 13,
+      "column_name": "dir",
+      "physical_type": "float64 (Unverified locally)",
+      "semantic_type": "Angular Motion Direction",
+      "meaning": "Angle of player movement vector in degrees (0-360).",
+      "evidence_status": "Officially documented",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Degrees (deg)",
+      "valid_range_or_domain": "[0.0, 360.0]",
+      "key_role": "Angular Feature",
+      "relationships": [
+        "Compare with combine_tracking.csv (dir)"
+      ],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Calculating cut angles and orientation-motion divergence."
+      ],
+      "limitations": "Unverified locally.",
+      "tables_sharing_column_name": [
+        "combine_tracking.csv",
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv"
+      ],
+      "cross_table_disambiguation": "Same field name appears in both `combine_tracking.csv` (Combine drill coordinate/kinematic space) and `game_tracking_2023/2024/2025.csv` (120-yard NFL game stadium coordinate space). Do not equate raw coordinates across Combine drills and NFL games without drill-specific frame anchoring."
+    },
+    {
+      "table_name": "game_tracking_2023.csv",
+      "column_index": 14,
+      "column_name": "event",
+      "physical_type": "string (Unverified locally)",
+      "semantic_type": "Play Event Annotation",
+      "meaning": "Frame-level football event tag (e.g., ball_snap, pass_forward, pass_arrived, tackle).",
+      "evidence_status": "Inferred from data",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Categorical text",
+      "valid_range_or_domain": "Standard Next Gen Stats event vocabulary",
+      "key_role": "Temporal Anchor",
+      "relationships": [],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Anchoring window calculations (e.g., 0.0s to 1.0s post-`ball_snap`)."
+      ],
+      "limitations": "Sparse column; non-null only on event frames.",
+      "tables_sharing_column_name": [
+        "combine_tracking.csv",
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv"
+      ],
+      "cross_table_disambiguation": null
+    },
+    {
+      "table_name": "game_tracking_2024.csv",
+      "column_index": 1,
+      "column_name": "gameId",
+      "physical_type": "int64 (Unverified locally)",
+      "semantic_type": "Foreign Identifier",
+      "meaning": "Unique game identifier for the 2024 NFL regular season.",
+      "evidence_status": "Inferred from data",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Identifier",
+      "valid_range_or_domain": "2024 season game IDs",
+      "key_role": "Part of Composite Primary Key / Foreign Key",
+      "relationships": [
+        "games.csv (gameId)",
+        "player_play.csv (gameId)"
+      ],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Joining 10 Hz frame trajectories to game metadata."
+      ],
+      "limitations": "Large file (2024); use streaming or chunked profiling rather than in-memory pandas load.",
+      "tables_sharing_column_name": [
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv",
+        "games.csv",
+        "player_play.csv"
+      ],
+      "cross_table_disambiguation": null
+    },
+    {
+      "table_name": "game_tracking_2024.csv",
+      "column_index": 2,
+      "column_name": "playId",
+      "physical_type": "int64 (Unverified locally)",
+      "semantic_type": "Play Identifier",
+      "meaning": "Play identifier within `gameId`.",
+      "evidence_status": "Inferred from data",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Identifier",
+      "valid_range_or_domain": "Positive integer",
+      "key_role": "Part of Composite Primary Key / Foreign Key (with gameId)",
+      "relationships": [
+        "player_play.csv (gameId, playId)"
+      ],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Grouping frame sequences by individual play."
+      ],
+      "limitations": "Always join with `gameId` + `playId`.",
+      "tables_sharing_column_name": [
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv",
+        "player_play.csv"
+      ],
+      "cross_table_disambiguation": null
+    },
+    {
+      "table_name": "game_tracking_2024.csv",
+      "column_index": 3,
+      "column_name": "nflId",
+      "physical_type": "float64 or int64 (Unverified locally)",
+      "semantic_type": "Foreign Identifier",
+      "meaning": "Player identifier (potentially nullable if football tracking rows are included).",
+      "evidence_status": "Inferred from data",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Identifier",
+      "valid_range_or_domain": "Positive integer (or NA for ball)",
+      "key_role": "Part of Composite Primary Key / Foreign Key",
+      "relationships": [
+        "players.csv (nflId)",
+        "player_play.csv (gameId, playId, nflId)",
+        "combine_tracking.csv (nflId)"
+      ],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Comparing a player's in-game 10 Hz movement envelope against their pre-draft Combine tracking."
+      ],
+      "limitations": "Verify whether football rows exist with null `nflId`.",
+      "tables_sharing_column_name": [
+        "combine_results.csv",
+        "combine_tracking.csv",
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv",
+        "player_career_successes.csv",
+        "player_play.csv",
+        "players.csv"
+      ],
+      "cross_table_disambiguation": null
+    },
+    {
+      "table_name": "game_tracking_2024.csv",
+      "column_index": 4,
+      "column_name": "frameId",
+      "physical_type": "int64 (Unverified locally)",
+      "semantic_type": "Temporal Frame Sequence",
+      "meaning": "10 Hz frame sequence number (100 ms intervals) within a play.",
+      "evidence_status": "Officially documented",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Frame index (0.1 s)",
+      "valid_range_or_domain": "1 to ~200",
+      "key_role": "Part of Composite Primary Key",
+      "relationships": [],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Synchronizing all tracked players on the field at the exact same 0.1s instant."
+      ],
+      "limitations": "Unverified locally.",
+      "tables_sharing_column_name": [
+        "combine_tracking.csv",
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv"
+      ],
+      "cross_table_disambiguation": null
+    },
+    {
+      "table_name": "game_tracking_2024.csv",
+      "column_index": 5,
+      "column_name": "time",
+      "physical_type": "string (Unverified locally)",
+      "semantic_type": "Timestamp",
+      "meaning": "UTC or Eastern timestamp of the tracking frame at 0.1s precision.",
+      "evidence_status": "Inferred from data",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "ISO Timestamp",
+      "valid_range_or_domain": "2024 season timestamps",
+      "key_role": "Temporal Attribute",
+      "relationships": [],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Temporal continuity checks."
+      ],
+      "limitations": "Unverified locally.",
+      "tables_sharing_column_name": [
+        "combine_tracking.csv",
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv"
+      ],
+      "cross_table_disambiguation": null
+    },
+    {
+      "table_name": "game_tracking_2024.csv",
+      "column_index": 6,
+      "column_name": "playDirection",
+      "physical_type": "string (Unverified locally)",
+      "semantic_type": "Spatial Coordinate Convention",
+      "meaning": "Offensive team marching direction ('left' or 'right') on the television broadcast view.",
+      "evidence_status": "Inferred from data",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Direction Category",
+      "valid_range_or_domain": "{'left', 'right'}",
+      "key_role": "Coordinate Standardization Key",
+      "relationships": [],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Flipping x, y, o, and dir when playDirection == 'left' so all plays run left-to-right."
+      ],
+      "limitations": "Failing to standardize by `playDirection` invalidates directional coordinate and angle features.",
+      "tables_sharing_column_name": [
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv"
+      ],
+      "cross_table_disambiguation": null
+    },
+    {
+      "table_name": "game_tracking_2024.csv",
+      "column_index": 7,
+      "column_name": "x",
+      "physical_type": "float64 (Unverified locally)",
+      "semantic_type": "Spatial Coordinate",
+      "meaning": "Player position along the 120-yard long axis of the stadium field.",
+      "evidence_status": "Officially documented",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Yards (yd)",
+      "valid_range_or_domain": "0.0 to 120.0 yd",
+      "key_role": "Spatial Feature",
+      "relationships": [],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Computing downfield depth, separation distance, and line-of-scrimmage penetration."
+      ],
+      "limitations": "Unverified locally.",
+      "tables_sharing_column_name": [
+        "combine_tracking.csv",
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv"
+      ],
+      "cross_table_disambiguation": "Same field name appears in both `combine_tracking.csv` (Combine drill coordinate/kinematic space) and `game_tracking_2023/2024/2025.csv` (120-yard NFL game stadium coordinate space). Do not equate raw coordinates across Combine drills and NFL games without drill-specific frame anchoring."
+    },
+    {
+      "table_name": "game_tracking_2024.csv",
+      "column_index": 8,
+      "column_name": "y",
+      "physical_type": "float64 (Unverified locally)",
+      "semantic_type": "Spatial Coordinate",
+      "meaning": "Player position along the 53.3-yard width of the field.",
+      "evidence_status": "Officially documented",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Yards (yd)",
+      "valid_range_or_domain": "0.0 to 53.3 yd",
+      "key_role": "Spatial Feature",
+      "relationships": [],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Measuring lateral leverage, boundary proximity, and route width."
+      ],
+      "limitations": "Unverified locally.",
+      "tables_sharing_column_name": [
+        "combine_tracking.csv",
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv"
+      ],
+      "cross_table_disambiguation": "Same field name appears in both `combine_tracking.csv` (Combine drill coordinate/kinematic space) and `game_tracking_2023/2024/2025.csv` (120-yard NFL game stadium coordinate space). Do not equate raw coordinates across Combine drills and NFL games without drill-specific frame anchoring."
+    },
+    {
+      "table_name": "game_tracking_2024.csv",
+      "column_index": 9,
+      "column_name": "s",
+      "physical_type": "float64 (Unverified locally)",
+      "semantic_type": "Kinematic Velocity",
+      "meaning": "Instantaneous player speed in yards per second.",
+      "evidence_status": "Officially documented",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Yards per second (yd/s)",
+      "valid_range_or_domain": "0.0 to ~12.0 yd/s",
+      "key_role": "Kinematic Feature",
+      "relationships": [
+        "Compare with combine_tracking.csv (s)"
+      ],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Evaluating functional play speed vs. Combine underwear-olympics top speed."
+      ],
+      "limitations": "Unverified locally.",
+      "tables_sharing_column_name": [
+        "combine_tracking.csv",
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv"
+      ],
+      "cross_table_disambiguation": "Same field name appears in both `combine_tracking.csv` (Combine drill coordinate/kinematic space) and `game_tracking_2023/2024/2025.csv` (120-yard NFL game stadium coordinate space). Do not equate raw coordinates across Combine drills and NFL games without drill-specific frame anchoring."
+    },
+    {
+      "table_name": "game_tracking_2024.csv",
+      "column_index": 10,
+      "column_name": "a",
+      "physical_type": "float64 (Unverified locally)",
+      "semantic_type": "Kinematic Acceleration",
+      "meaning": "Instantaneous acceleration magnitude in yards per second squared.",
+      "evidence_status": "Officially documented",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Yards per second squared (yd/s^2)",
+      "valid_range_or_domain": "0.0 to ~15.0 yd/s^2",
+      "key_role": "Kinematic Feature",
+      "relationships": [
+        "Compare with combine_tracking.csv (a)"
+      ],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Measuring snap burst (first 0.5s after snap) and deceleration into route breaks."
+      ],
+      "limitations": "Unverified locally.",
+      "tables_sharing_column_name": [
+        "combine_tracking.csv",
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv"
+      ],
+      "cross_table_disambiguation": "Same field name appears in both `combine_tracking.csv` (Combine drill coordinate/kinematic space) and `game_tracking_2023/2024/2025.csv` (120-yard NFL game stadium coordinate space). Do not equate raw coordinates across Combine drills and NFL games without drill-specific frame anchoring."
+    },
+    {
+      "table_name": "game_tracking_2024.csv",
+      "column_index": 11,
+      "column_name": "dis",
+      "physical_type": "float64 (Unverified locally)",
+      "semantic_type": "Kinematic Displacement",
+      "meaning": "Distance traveled since the preceding 10 Hz frame.",
+      "evidence_status": "Inferred from data",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Yards (yd)",
+      "valid_range_or_domain": "0.0 to ~1.5 yd",
+      "key_role": "Kinematic Feature",
+      "relationships": [],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Play workload distance."
+      ],
+      "limitations": "Unverified locally.",
+      "tables_sharing_column_name": [
+        "combine_tracking.csv",
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv"
+      ],
+      "cross_table_disambiguation": null
+    },
+    {
+      "table_name": "game_tracking_2024.csv",
+      "column_index": 12,
+      "column_name": "o",
+      "physical_type": "float64 (Unverified locally)",
+      "semantic_type": "Angular Orientation",
+      "meaning": "Player shoulder-pad orientation angle in degrees (0-360).",
+      "evidence_status": "Officially documented",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Degrees (deg)",
+      "valid_range_or_domain": "[0.0, 360.0]",
+      "key_role": "Angular Feature",
+      "relationships": [
+        "Compare with combine_tracking.csv (o)"
+      ],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Evaluating DB hip-flip fluid mechanics and OL pass-set squareness."
+      ],
+      "limitations": "Unverified locally.",
+      "tables_sharing_column_name": [
+        "combine_tracking.csv",
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv"
+      ],
+      "cross_table_disambiguation": "Same field name appears in both `combine_tracking.csv` (Combine drill coordinate/kinematic space) and `game_tracking_2023/2024/2025.csv` (120-yard NFL game stadium coordinate space). Do not equate raw coordinates across Combine drills and NFL games without drill-specific frame anchoring."
+    },
+    {
+      "table_name": "game_tracking_2024.csv",
+      "column_index": 13,
+      "column_name": "dir",
+      "physical_type": "float64 (Unverified locally)",
+      "semantic_type": "Angular Motion Direction",
+      "meaning": "Angle of player movement vector in degrees (0-360).",
+      "evidence_status": "Officially documented",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Degrees (deg)",
+      "valid_range_or_domain": "[0.0, 360.0]",
+      "key_role": "Angular Feature",
+      "relationships": [
+        "Compare with combine_tracking.csv (dir)"
+      ],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Calculating cut angles and orientation-motion divergence."
+      ],
+      "limitations": "Unverified locally.",
+      "tables_sharing_column_name": [
+        "combine_tracking.csv",
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv"
+      ],
+      "cross_table_disambiguation": "Same field name appears in both `combine_tracking.csv` (Combine drill coordinate/kinematic space) and `game_tracking_2023/2024/2025.csv` (120-yard NFL game stadium coordinate space). Do not equate raw coordinates across Combine drills and NFL games without drill-specific frame anchoring."
+    },
+    {
+      "table_name": "game_tracking_2024.csv",
+      "column_index": 14,
+      "column_name": "event",
+      "physical_type": "string (Unverified locally)",
+      "semantic_type": "Play Event Annotation",
+      "meaning": "Frame-level football event tag (e.g., ball_snap, pass_forward, pass_arrived, tackle).",
+      "evidence_status": "Inferred from data",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Categorical text",
+      "valid_range_or_domain": "Standard Next Gen Stats event vocabulary",
+      "key_role": "Temporal Anchor",
+      "relationships": [],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Anchoring window calculations (e.g., 0.0s to 1.0s post-`ball_snap`)."
+      ],
+      "limitations": "Sparse column; non-null only on event frames.",
+      "tables_sharing_column_name": [
+        "combine_tracking.csv",
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv"
+      ],
+      "cross_table_disambiguation": null
+    },
+    {
+      "table_name": "game_tracking_2025.csv",
+      "column_index": 1,
+      "column_name": "gameId",
+      "physical_type": "int64 (Unverified locally)",
+      "semantic_type": "Foreign Identifier",
+      "meaning": "Unique game identifier for the 2025 NFL regular season.",
+      "evidence_status": "Inferred from data",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Identifier",
+      "valid_range_or_domain": "2025 season game IDs",
+      "key_role": "Part of Composite Primary Key / Foreign Key",
+      "relationships": [
+        "games.csv (gameId)",
+        "player_play.csv (gameId)"
+      ],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Joining 10 Hz frame trajectories to game metadata."
+      ],
+      "limitations": "Large file (2025); use streaming or chunked profiling rather than in-memory pandas load.",
+      "tables_sharing_column_name": [
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv",
+        "games.csv",
+        "player_play.csv"
+      ],
+      "cross_table_disambiguation": null
+    },
+    {
+      "table_name": "game_tracking_2025.csv",
+      "column_index": 2,
+      "column_name": "playId",
+      "physical_type": "int64 (Unverified locally)",
+      "semantic_type": "Play Identifier",
+      "meaning": "Play identifier within `gameId`.",
+      "evidence_status": "Inferred from data",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Identifier",
+      "valid_range_or_domain": "Positive integer",
+      "key_role": "Part of Composite Primary Key / Foreign Key (with gameId)",
+      "relationships": [
+        "player_play.csv (gameId, playId)"
+      ],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Grouping frame sequences by individual play."
+      ],
+      "limitations": "Always join with `gameId` + `playId`.",
+      "tables_sharing_column_name": [
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv",
+        "player_play.csv"
+      ],
+      "cross_table_disambiguation": null
+    },
+    {
+      "table_name": "game_tracking_2025.csv",
+      "column_index": 3,
+      "column_name": "nflId",
+      "physical_type": "float64 or int64 (Unverified locally)",
+      "semantic_type": "Foreign Identifier",
+      "meaning": "Player identifier (potentially nullable if football tracking rows are included).",
+      "evidence_status": "Inferred from data",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Identifier",
+      "valid_range_or_domain": "Positive integer (or NA for ball)",
+      "key_role": "Part of Composite Primary Key / Foreign Key",
+      "relationships": [
+        "players.csv (nflId)",
+        "player_play.csv (gameId, playId, nflId)",
+        "combine_tracking.csv (nflId)"
+      ],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Comparing a player's in-game 10 Hz movement envelope against their pre-draft Combine tracking."
+      ],
+      "limitations": "Verify whether football rows exist with null `nflId`.",
+      "tables_sharing_column_name": [
+        "combine_results.csv",
+        "combine_tracking.csv",
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv",
+        "player_career_successes.csv",
+        "player_play.csv",
+        "players.csv"
+      ],
+      "cross_table_disambiguation": null
+    },
+    {
+      "table_name": "game_tracking_2025.csv",
+      "column_index": 4,
+      "column_name": "frameId",
+      "physical_type": "int64 (Unverified locally)",
+      "semantic_type": "Temporal Frame Sequence",
+      "meaning": "10 Hz frame sequence number (100 ms intervals) within a play.",
+      "evidence_status": "Officially documented",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Frame index (0.1 s)",
+      "valid_range_or_domain": "1 to ~200",
+      "key_role": "Part of Composite Primary Key",
+      "relationships": [],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Synchronizing all tracked players on the field at the exact same 0.1s instant."
+      ],
+      "limitations": "Unverified locally.",
+      "tables_sharing_column_name": [
+        "combine_tracking.csv",
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv"
+      ],
+      "cross_table_disambiguation": null
+    },
+    {
+      "table_name": "game_tracking_2025.csv",
+      "column_index": 5,
+      "column_name": "time",
+      "physical_type": "string (Unverified locally)",
+      "semantic_type": "Timestamp",
+      "meaning": "UTC or Eastern timestamp of the tracking frame at 0.1s precision.",
+      "evidence_status": "Inferred from data",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "ISO Timestamp",
+      "valid_range_or_domain": "2025 season timestamps",
+      "key_role": "Temporal Attribute",
+      "relationships": [],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Temporal continuity checks."
+      ],
+      "limitations": "Unverified locally.",
+      "tables_sharing_column_name": [
+        "combine_tracking.csv",
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv"
+      ],
+      "cross_table_disambiguation": null
+    },
+    {
+      "table_name": "game_tracking_2025.csv",
+      "column_index": 6,
+      "column_name": "playDirection",
+      "physical_type": "string (Unverified locally)",
+      "semantic_type": "Spatial Coordinate Convention",
+      "meaning": "Offensive team marching direction ('left' or 'right') on the television broadcast view.",
+      "evidence_status": "Inferred from data",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Direction Category",
+      "valid_range_or_domain": "{'left', 'right'}",
+      "key_role": "Coordinate Standardization Key",
+      "relationships": [],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Flipping x, y, o, and dir when playDirection == 'left' so all plays run left-to-right."
+      ],
+      "limitations": "Failing to standardize by `playDirection` invalidates directional coordinate and angle features.",
+      "tables_sharing_column_name": [
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv"
+      ],
+      "cross_table_disambiguation": null
+    },
+    {
+      "table_name": "game_tracking_2025.csv",
+      "column_index": 7,
+      "column_name": "x",
+      "physical_type": "float64 (Unverified locally)",
+      "semantic_type": "Spatial Coordinate",
+      "meaning": "Player position along the 120-yard long axis of the stadium field.",
+      "evidence_status": "Officially documented",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Yards (yd)",
+      "valid_range_or_domain": "0.0 to 120.0 yd",
+      "key_role": "Spatial Feature",
+      "relationships": [],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Computing downfield depth, separation distance, and line-of-scrimmage penetration."
+      ],
+      "limitations": "Unverified locally.",
+      "tables_sharing_column_name": [
+        "combine_tracking.csv",
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv"
+      ],
+      "cross_table_disambiguation": "Same field name appears in both `combine_tracking.csv` (Combine drill coordinate/kinematic space) and `game_tracking_2023/2024/2025.csv` (120-yard NFL game stadium coordinate space). Do not equate raw coordinates across Combine drills and NFL games without drill-specific frame anchoring."
+    },
+    {
+      "table_name": "game_tracking_2025.csv",
+      "column_index": 8,
+      "column_name": "y",
+      "physical_type": "float64 (Unverified locally)",
+      "semantic_type": "Spatial Coordinate",
+      "meaning": "Player position along the 53.3-yard width of the field.",
+      "evidence_status": "Officially documented",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Yards (yd)",
+      "valid_range_or_domain": "0.0 to 53.3 yd",
+      "key_role": "Spatial Feature",
+      "relationships": [],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Measuring lateral leverage, boundary proximity, and route width."
+      ],
+      "limitations": "Unverified locally.",
+      "tables_sharing_column_name": [
+        "combine_tracking.csv",
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv"
+      ],
+      "cross_table_disambiguation": "Same field name appears in both `combine_tracking.csv` (Combine drill coordinate/kinematic space) and `game_tracking_2023/2024/2025.csv` (120-yard NFL game stadium coordinate space). Do not equate raw coordinates across Combine drills and NFL games without drill-specific frame anchoring."
+    },
+    {
+      "table_name": "game_tracking_2025.csv",
+      "column_index": 9,
+      "column_name": "s",
+      "physical_type": "float64 (Unverified locally)",
+      "semantic_type": "Kinematic Velocity",
+      "meaning": "Instantaneous player speed in yards per second.",
+      "evidence_status": "Officially documented",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Yards per second (yd/s)",
+      "valid_range_or_domain": "0.0 to ~12.0 yd/s",
+      "key_role": "Kinematic Feature",
+      "relationships": [
+        "Compare with combine_tracking.csv (s)"
+      ],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Evaluating functional play speed vs. Combine underwear-olympics top speed."
+      ],
+      "limitations": "Unverified locally.",
+      "tables_sharing_column_name": [
+        "combine_tracking.csv",
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv"
+      ],
+      "cross_table_disambiguation": "Same field name appears in both `combine_tracking.csv` (Combine drill coordinate/kinematic space) and `game_tracking_2023/2024/2025.csv` (120-yard NFL game stadium coordinate space). Do not equate raw coordinates across Combine drills and NFL games without drill-specific frame anchoring."
+    },
+    {
+      "table_name": "game_tracking_2025.csv",
+      "column_index": 10,
+      "column_name": "a",
+      "physical_type": "float64 (Unverified locally)",
+      "semantic_type": "Kinematic Acceleration",
+      "meaning": "Instantaneous acceleration magnitude in yards per second squared.",
+      "evidence_status": "Officially documented",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Yards per second squared (yd/s^2)",
+      "valid_range_or_domain": "0.0 to ~15.0 yd/s^2",
+      "key_role": "Kinematic Feature",
+      "relationships": [
+        "Compare with combine_tracking.csv (a)"
+      ],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Measuring snap burst (first 0.5s after snap) and deceleration into route breaks."
+      ],
+      "limitations": "Unverified locally.",
+      "tables_sharing_column_name": [
+        "combine_tracking.csv",
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv"
+      ],
+      "cross_table_disambiguation": "Same field name appears in both `combine_tracking.csv` (Combine drill coordinate/kinematic space) and `game_tracking_2023/2024/2025.csv` (120-yard NFL game stadium coordinate space). Do not equate raw coordinates across Combine drills and NFL games without drill-specific frame anchoring."
+    },
+    {
+      "table_name": "game_tracking_2025.csv",
+      "column_index": 11,
+      "column_name": "dis",
+      "physical_type": "float64 (Unverified locally)",
+      "semantic_type": "Kinematic Displacement",
+      "meaning": "Distance traveled since the preceding 10 Hz frame.",
+      "evidence_status": "Inferred from data",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Yards (yd)",
+      "valid_range_or_domain": "0.0 to ~1.5 yd",
+      "key_role": "Kinematic Feature",
+      "relationships": [],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Play workload distance."
+      ],
+      "limitations": "Unverified locally.",
+      "tables_sharing_column_name": [
+        "combine_tracking.csv",
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv"
+      ],
+      "cross_table_disambiguation": null
+    },
+    {
+      "table_name": "game_tracking_2025.csv",
+      "column_index": 12,
+      "column_name": "o",
+      "physical_type": "float64 (Unverified locally)",
+      "semantic_type": "Angular Orientation",
+      "meaning": "Player shoulder-pad orientation angle in degrees (0-360).",
+      "evidence_status": "Officially documented",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Degrees (deg)",
+      "valid_range_or_domain": "[0.0, 360.0]",
+      "key_role": "Angular Feature",
+      "relationships": [
+        "Compare with combine_tracking.csv (o)"
+      ],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Evaluating DB hip-flip fluid mechanics and OL pass-set squareness."
+      ],
+      "limitations": "Unverified locally.",
+      "tables_sharing_column_name": [
+        "combine_tracking.csv",
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv"
+      ],
+      "cross_table_disambiguation": "Same field name appears in both `combine_tracking.csv` (Combine drill coordinate/kinematic space) and `game_tracking_2023/2024/2025.csv` (120-yard NFL game stadium coordinate space). Do not equate raw coordinates across Combine drills and NFL games without drill-specific frame anchoring."
+    },
+    {
+      "table_name": "game_tracking_2025.csv",
+      "column_index": 13,
+      "column_name": "dir",
+      "physical_type": "float64 (Unverified locally)",
+      "semantic_type": "Angular Motion Direction",
+      "meaning": "Angle of player movement vector in degrees (0-360).",
+      "evidence_status": "Officially documented",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Degrees (deg)",
+      "valid_range_or_domain": "[0.0, 360.0]",
+      "key_role": "Angular Feature",
+      "relationships": [
+        "Compare with combine_tracking.csv (dir)"
+      ],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Calculating cut angles and orientation-motion divergence."
+      ],
+      "limitations": "Unverified locally.",
+      "tables_sharing_column_name": [
+        "combine_tracking.csv",
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv"
+      ],
+      "cross_table_disambiguation": "Same field name appears in both `combine_tracking.csv` (Combine drill coordinate/kinematic space) and `game_tracking_2023/2024/2025.csv` (120-yard NFL game stadium coordinate space). Do not equate raw coordinates across Combine drills and NFL games without drill-specific frame anchoring."
+    },
+    {
+      "table_name": "game_tracking_2025.csv",
+      "column_index": 14,
+      "column_name": "event",
+      "physical_type": "string (Unverified locally)",
+      "semantic_type": "Play Event Annotation",
+      "meaning": "Frame-level football event tag (e.g., ball_snap, pass_forward, pass_arrived, tackle).",
+      "evidence_status": "Inferred from data",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Categorical text",
+      "valid_range_or_domain": "Standard Next Gen Stats event vocabulary",
+      "key_role": "Temporal Anchor",
+      "relationships": [],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Anchoring window calculations (e.g., 0.0s to 1.0s post-`ball_snap`)."
+      ],
+      "limitations": "Sparse column; non-null only on event frames.",
+      "tables_sharing_column_name": [
+        "combine_tracking.csv",
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv"
+      ],
+      "cross_table_disambiguation": null
+    },
+    {
+      "table_name": "games.csv",
+      "column_index": 1,
+      "column_name": "gameId",
+      "physical_type": "int64 (Unverified locally)",
+      "semantic_type": "Primary Identifier",
+      "meaning": "Unique 10-digit NFL game identifier (typically formatted YYYYMMDDNN).",
+      "evidence_status": "Inferred from data",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Identifier",
+      "valid_range_or_domain": "2023090700 - 2026011599",
+      "key_role": "Primary Key (Candidate)",
+      "relationships": [
+        "player_play.csv (gameId)",
+        "game_tracking_2023.csv (gameId)",
+        "game_tracking_2024.csv (gameId)",
+        "game_tracking_2025.csv (gameId)"
+      ],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Joining play-level and frame-level tracking records to season and week context."
+      ],
+      "limitations": "Exact game count across 2023, 2024, and 2025 seasons requires local inspection.",
+      "tables_sharing_column_name": [
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv",
+        "games.csv",
+        "player_play.csv"
+      ],
+      "cross_table_disambiguation": null
+    },
+    {
+      "table_name": "games.csv",
+      "column_index": 2,
+      "column_name": "season",
+      "physical_type": "int64 (Unverified locally)",
+      "semantic_type": "Temporal Year",
+      "meaning": "NFL regular-season year (2023, 2024, or 2025).",
+      "evidence_status": "Officially documented",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Calendar Year",
+      "valid_range_or_domain": "{2023, 2024, 2025}",
+      "key_role": "Partition / Temporal Key",
+      "relationships": [
+        "Partitions game_tracking_2023.csv, game_tracking_2024.csv, game_tracking_2025.csv"
+      ],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Longitudinal tracking of rookie vs. year-2/year-3 progression",
+        "Preventing temporal lookahead leakage."
+      ],
+      "limitations": "Verify whether postseason games are excluded.",
+      "tables_sharing_column_name": [
+        "games.csv"
+      ],
+      "cross_table_disambiguation": null
+    },
+    {
+      "table_name": "games.csv",
+      "column_index": 3,
+      "column_name": "week",
+      "physical_type": "int64 (Unverified locally)",
+      "semantic_type": "Temporal Index",
+      "meaning": "Week number within the NFL regular season.",
+      "evidence_status": "Inferred from data",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Week index",
+      "valid_range_or_domain": "1 to 18",
+      "key_role": "Temporal Attribute",
+      "relationships": [],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "In-season workload and fatigue progression analysis",
+        "Temporal split validation."
+      ],
+      "limitations": "Unverified locally.",
+      "tables_sharing_column_name": [
+        "games.csv"
+      ],
+      "cross_table_disambiguation": null
+    },
+    {
+      "table_name": "games.csv",
+      "column_index": 4,
+      "column_name": "gameDate",
+      "physical_type": "string (Unverified locally)",
+      "semantic_type": "Temporal Date",
+      "meaning": "Calendar date on which the game was played.",
+      "evidence_status": "Inferred from data",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Date (MM/DD/YYYY or YYYY-MM-DD)",
+      "valid_range_or_domain": "2023-2026 calendar dates",
+      "key_role": "Temporal Attribute",
+      "relationships": [],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Exact chronological ordering of player appearances."
+      ],
+      "limitations": "Date string format must be verified before parsing.",
+      "tables_sharing_column_name": [
+        "games.csv"
+      ],
+      "cross_table_disambiguation": null
+    },
+    {
+      "table_name": "games.csv",
+      "column_index": 5,
+      "column_name": "gameTimeEastern",
+      "physical_type": "string (Unverified locally)",
+      "semantic_type": "Temporal Time",
+      "meaning": "Scheduled kickoff time in US Eastern Time.",
+      "evidence_status": "Inferred from data",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Time (HH:MM:SS)",
+      "valid_range_or_domain": "00:00:00 to 23:59:59",
+      "key_role": "Descriptive Attribute",
+      "relationships": [],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Contextual metadata."
+      ],
+      "limitations": "Unverified locally.",
+      "tables_sharing_column_name": [
+        "games.csv"
+      ],
+      "cross_table_disambiguation": null
+    },
+    {
+      "table_name": "games.csv",
+      "column_index": 6,
+      "column_name": "homeTeamAbbr",
+      "physical_type": "string (Unverified locally)",
+      "semantic_type": "Team Identifier",
+      "meaning": "Three-letter code for the host NFL franchise.",
+      "evidence_status": "Inferred from data",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Team Code",
+      "valid_range_or_domain": "32 NFL team abbreviations",
+      "key_role": "Dimension Attribute",
+      "relationships": [],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Identifying home venue/surface context."
+      ],
+      "limitations": "Unverified locally.",
+      "tables_sharing_column_name": [
+        "games.csv"
+      ],
+      "cross_table_disambiguation": null
+    },
+    {
+      "table_name": "games.csv",
+      "column_index": 7,
+      "column_name": "visitorTeamAbbr",
+      "physical_type": "string (Unverified locally)",
+      "semantic_type": "Team Identifier",
+      "meaning": "Three-letter code for the visiting NFL franchise.",
+      "evidence_status": "Inferred from data",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Team Code",
+      "valid_range_or_domain": "32 NFL team abbreviations",
+      "key_role": "Dimension Attribute",
+      "relationships": [],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Identifying opponent context."
+      ],
+      "limitations": "Unverified locally.",
+      "tables_sharing_column_name": [
+        "games.csv"
+      ],
+      "cross_table_disambiguation": null
+    },
+    {
+      "table_name": "games.csv",
+      "column_index": 8,
+      "column_name": "homeFinalScore",
+      "physical_type": "int64 (Unverified locally)",
+      "semantic_type": "Score Metric",
+      "meaning": "Final points scored by the home team.",
+      "evidence_status": "Inferred from data",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Points",
+      "valid_range_or_domain": "0 to 80",
+      "key_role": "Outcome Attribute",
+      "relationships": [],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Game script / score differential conditioning."
+      ],
+      "limitations": "Unverified locally.",
+      "tables_sharing_column_name": [
+        "games.csv"
+      ],
+      "cross_table_disambiguation": null
+    },
+    {
+      "table_name": "games.csv",
+      "column_index": 9,
+      "column_name": "visitorFinalScore",
+      "physical_type": "int64 (Unverified locally)",
+      "semantic_type": "Score Metric",
+      "meaning": "Final points scored by the visiting team.",
+      "evidence_status": "Inferred from data",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Points",
+      "valid_range_or_domain": "0 to 80",
+      "key_role": "Outcome Attribute",
+      "relationships": [],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Game script / score differential conditioning."
+      ],
+      "limitations": "Unverified locally.",
+      "tables_sharing_column_name": [
+        "games.csv"
+      ],
+      "cross_table_disambiguation": null
+    },
+    {
+      "table_name": "player_career_successes.csv",
+      "column_index": 1,
+      "column_name": "nflId",
+      "physical_type": "int64 (Unverified locally)",
+      "semantic_type": "Primary / Foreign Identifier",
+      "meaning": "Unique player identifier linking pre-draft Combine records to NFL regular-season career outcomes.",
+      "evidence_status": "Inferred from data",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Identifier",
+      "valid_range_or_domain": "Positive integer",
+      "key_role": "Primary Key / Foreign Key (Candidate)",
+      "relationships": [
+        "players.csv (nflId)",
+        "combine_results.csv (nflId)",
+        "combine_tracking.csv (nflId)"
+      ],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Joining Combine kinematic features to longitudinal NFL career outcome indicators."
+      ],
+      "limitations": "Verify whether table grain is one row per player or one row per player-season.",
+      "tables_sharing_column_name": [
+        "combine_results.csv",
+        "combine_tracking.csv",
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv",
+        "player_career_successes.csv",
+        "player_play.csv",
+        "players.csv"
+      ],
+      "cross_table_disambiguation": null
+    },
+    {
+      "table_name": "player_career_successes.csv",
+      "column_index": 2,
+      "column_name": "[career_outcome_metrics_unverified]",
+      "physical_type": "Unknown (Requires local CSV inspection)",
+      "semantic_type": "Career Outcome / Benchmark",
+      "meaning": "Official NFL regular-season performance benchmarks, career longevity, snap volume, or achievement milestones provided by competition hosts.",
+      "evidence_status": "Unknown",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Unknown until player_career_successes.csv (13,801 bytes) is downloaded and profiled",
+      "valid_range_or_domain": "Unknown",
+      "key_role": "Research Outcome Variable (Not a single mandatory leaderboard target)",
+      "relationships": [],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Evaluating whether Combine sensor traits translate into sustained regular-season production or role attainment."
+      ],
+      "limitations": "Do not assume a single canonical prediction target column exists; inspect exact headers of player_career_successes.csv once downloaded.",
+      "tables_sharing_column_name": [
+        "player_career_successes.csv"
+      ],
+      "cross_table_disambiguation": null
+    },
+    {
+      "table_name": "player_play.csv",
+      "column_index": 1,
+      "column_name": "gameId",
+      "physical_type": "int64 (Unverified locally)",
+      "semantic_type": "Foreign Identifier",
+      "meaning": "Unique identifier of the regular-season game.",
+      "evidence_status": "Inferred from data",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Identifier",
+      "valid_range_or_domain": "Matches games.csv (gameId)",
+      "key_role": "Part of Composite Primary Key / Foreign Key",
+      "relationships": [
+        "games.csv (gameId)",
+        "game_tracking_2023/2024/2025.csv (gameId)"
+      ],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Linking player-play participation to game context and tracking frames."
+      ],
+      "limitations": "Unverified locally.",
+      "tables_sharing_column_name": [
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv",
+        "games.csv",
+        "player_play.csv"
+      ],
+      "cross_table_disambiguation": null
+    },
+    {
+      "table_name": "player_play.csv",
+      "column_index": 2,
+      "column_name": "playId",
+      "physical_type": "int64 (Unverified locally)",
+      "semantic_type": "Play Identifier",
+      "meaning": "Play identifier, unique only within a given `gameId`.",
+      "evidence_status": "Inferred from data",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Identifier",
+      "valid_range_or_domain": "Positive integer",
+      "key_role": "Part of Composite Primary Key (Never join on playId alone without gameId)",
+      "relationships": [
+        "game_tracking_2023/2024/2025.csv (gameId, playId)"
+      ],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Identifying specific snaps for play-level aggregation."
+      ],
+      "limitations": "Joining on `playId` without `gameId` causes massive many-to-many row multiplication across games.",
+      "tables_sharing_column_name": [
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv",
+        "player_play.csv"
+      ],
+      "cross_table_disambiguation": null
+    },
+    {
+      "table_name": "player_play.csv",
+      "column_index": 3,
+      "column_name": "nflId",
+      "physical_type": "int64 (Unverified locally)",
+      "semantic_type": "Foreign Identifier",
+      "meaning": "Unique identifier of the player participating on the play.",
+      "evidence_status": "Inferred from data",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Identifier",
+      "valid_range_or_domain": "Positive integer",
+      "key_role": "Part of Composite Primary Key / Foreign Key",
+      "relationships": [
+        "players.csv (nflId)",
+        "combine_results.csv (nflId)",
+        "player_career_successes.csv (nflId)"
+      ],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Aggregating play-level assignments and performance to the player level."
+      ],
+      "limitations": "Unverified locally.",
+      "tables_sharing_column_name": [
+        "combine_results.csv",
+        "combine_tracking.csv",
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv",
+        "player_career_successes.csv",
+        "player_play.csv",
+        "players.csv"
+      ],
+      "cross_table_disambiguation": null
+    },
+    {
+      "table_name": "player_play.csv",
+      "column_index": 4,
+      "column_name": "teamAbbr",
+      "physical_type": "string (Unverified locally)",
+      "semantic_type": "Team Identifier",
+      "meaning": "Three-letter team code for the player on that specific play.",
+      "evidence_status": "Inferred from data",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Team Code",
+      "valid_range_or_domain": "32 NFL teams",
+      "key_role": "Dimension Attribute",
+      "relationships": [
+        "games.csv (homeTeamAbbr / visitorTeamAbbr)"
+      ],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Tracking team scheme context and roster changes."
+      ],
+      "limitations": "Unverified locally.",
+      "tables_sharing_column_name": [
+        "player_play.csv"
+      ],
+      "cross_table_disambiguation": null
+    },
+    {
+      "table_name": "player_play.csv",
+      "column_index": 5,
+      "column_name": "routeRan",
+      "physical_type": "string (Unverified locally)",
+      "semantic_type": "Tactical Assignment",
+      "meaning": "Route pattern executed by an eligible receiver (WR/TE) on a passing play.",
+      "evidence_status": "Inferred from data",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Route Category",
+      "valid_range_or_domain": "GO, SLANT, OUT, IN, HITCH, POST, CORNER, CROSS, FLAT, etc. (Null for non-route players)",
+      "key_role": "Contextual Filter",
+      "relationships": [],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Connecting Combine 3-cone/shuttle braking traits to in-game route separation on breaking routes."
+      ],
+      "limitations": "Structural nulls for defensive players, linemen, and run plays.",
+      "tables_sharing_column_name": [
+        "player_play.csv"
+      ],
+      "cross_table_disambiguation": null
+    },
+    {
+      "table_name": "player_play.csv",
+      "column_index": 6,
+      "column_name": "[additional_play_charting_columns_unverified]",
+      "physical_type": "Unknown (Requires local CSV inspection)",
+      "semantic_type": "Play Participation & Outcomes",
+      "meaning": "Additional alignment, motion, pass rush, coverage, blocking, and statistical columns in player_play.csv (146.88 MB).",
+      "evidence_status": "Unknown",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Various",
+      "valid_range_or_domain": "Unknown until player_play.csv header is inspected locally",
+      "key_role": "Play-Level Features & Outcomes",
+      "relationships": [],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Conditioning regular-season tracking metrics on tactical play role."
+      ],
+      "limitations": "Download player_play.csv and run `python scripts/profile_datasets.py` to populate the exact 100% column list.",
+      "tables_sharing_column_name": [
+        "player_play.csv"
+      ],
+      "cross_table_disambiguation": null
+    },
+    {
+      "table_name": "players.csv",
+      "column_index": 1,
+      "column_name": "nflId",
+      "physical_type": "int64 (Unverified locally)",
+      "semantic_type": "Primary Identifier",
+      "meaning": "Unique player identifier assigned across NFL Next Gen Stats and Combine tables.",
+      "evidence_status": "Officially documented",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Identifier (Dimensionless)",
+      "valid_range_or_domain": "Positive integer",
+      "key_role": "Primary Key (Candidate)",
+      "relationships": [
+        "combine_results.csv (nflId)",
+        "combine_tracking.csv (nflId)",
+        "player_career_successes.csv (nflId)",
+        "player_play.csv (nflId)",
+        "game_tracking_2023/2024/2025.csv (nflId)"
+      ],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Entity resolution across Combine drills, play charting, and regular-season tracking."
+      ],
+      "limitations": "Local uniqueness and exact overlap across Combine vs. NFL cohorts remain unverified until players.csv is downloaded.",
+      "tables_sharing_column_name": [
+        "combine_results.csv",
+        "combine_tracking.csv",
+        "game_tracking_2023.csv",
+        "game_tracking_2024.csv",
+        "game_tracking_2025.csv",
+        "player_career_successes.csv",
+        "player_play.csv",
+        "players.csv"
+      ],
+      "cross_table_disambiguation": null
+    },
+    {
+      "table_name": "players.csv",
+      "column_index": 2,
+      "column_name": "displayName",
+      "physical_type": "string (Unverified locally)",
+      "semantic_type": "Person Name",
+      "meaning": "Player's formatted full name for display and reporting.",
+      "evidence_status": "Inferred from data",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Text",
+      "valid_range_or_domain": "Non-empty string",
+      "key_role": "Descriptive Attribute (Never use as join key due to homonyms/suffixes)",
+      "relationships": [],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Human-readable labeling in visualizations and player cards."
+      ],
+      "limitations": "Do not join tables on displayName; always join on nflId.",
+      "tables_sharing_column_name": [
+        "players.csv"
+      ],
+      "cross_table_disambiguation": null
+    },
+    {
+      "table_name": "players.csv",
+      "column_index": 3,
+      "column_name": "position",
+      "physical_type": "string (Unverified locally)",
+      "semantic_type": "Categorical (Position Group)",
+      "meaning": "Official NFL position designation. Competition focuses on WR, TE, DB, OL, and DL cohorts.",
+      "evidence_status": "Officially documented",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Position Code",
+      "valid_range_or_domain": "WR, TE, CB, S, DB, OT, OG, C, OL, DE, DT, NT, DL (Exact granularity unverified locally)",
+      "key_role": "Cohort Stratification Key",
+      "relationships": [],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Stratifying movement models by position group",
+        "Normalizing Combine kinematic percentiles within positional peers."
+      ],
+      "limitations": "Exact distinction between sub-positions (e.g., CB/FS/SS vs DB) requires local inspection of players.csv.",
+      "tables_sharing_column_name": [
+        "combine_results.csv",
+        "players.csv"
+      ],
+      "cross_table_disambiguation": "Appears in both `players.csv` (NFL biographical position) and `combine_results.csv` (Combine testing position group). Verify whether prospects changed position designations between pre-draft Combine and NFL roster."
+    },
+    {
+      "table_name": "players.csv",
+      "column_index": 4,
+      "column_name": "height",
+      "physical_type": "string or float (Unverified locally)",
+      "semantic_type": "Anthropometric Measurement",
+      "meaning": "Player stature as listed in official biographical records.",
+      "evidence_status": "Inferred from data",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Inches or feet-inches string (e.g. '6-2' or 74.0; unverified locally)",
+      "valid_range_or_domain": "65 to 82 inches",
+      "key_role": "Covariate",
+      "relationships": [
+        "Compare against combine_results.csv official Combine measured height"
+      ],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Anthropometric normalization",
+        "Stride-length and center-of-mass covariate adjustment."
+      ],
+      "limitations": "Historical Big Data Bowl files occasionally store height as 'feet-inches' strings requiring parsing.",
+      "tables_sharing_column_name": [
+        "players.csv"
+      ],
+      "cross_table_disambiguation": null
+    },
+    {
+      "table_name": "players.csv",
+      "column_index": 5,
+      "column_name": "weight",
+      "physical_type": "float64 or int64 (Unverified locally)",
+      "semantic_type": "Anthropometric Measurement",
+      "meaning": "Player body mass in pounds.",
+      "evidence_status": "Inferred from data",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Pounds (lbs)",
+      "valid_range_or_domain": "160 to 380 lbs",
+      "key_role": "Covariate",
+      "relationships": [
+        "Compare against combine_results.csv Combine weigh-in mass"
+      ],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Momentum and force proxy calculation (mass * acceleration)",
+        "Size-adjusted speed indexing."
+      ],
+      "limitations": "Listed roster weight may differ from official Combine weigh-in weight.",
+      "tables_sharing_column_name": [
+        "players.csv"
+      ],
+      "cross_table_disambiguation": null
+    },
+    {
+      "table_name": "players.csv",
+      "column_index": 6,
+      "column_name": "birthDate",
+      "physical_type": "date / string (Unverified locally)",
+      "semantic_type": "Temporal Date",
+      "meaning": "Player date of birth.",
+      "evidence_status": "Inferred from data",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "ISO Date (YYYY-MM-DD)",
+      "valid_range_or_domain": "Valid calendar date",
+      "key_role": "Covariate",
+      "relationships": [],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Computing prospect age at Combine and age during regular-season seasons (2023-2025)."
+      ],
+      "limitations": "Missingness rate unverified locally.",
+      "tables_sharing_column_name": [
+        "players.csv"
+      ],
+      "cross_table_disambiguation": null
+    },
+    {
+      "table_name": "players.csv",
+      "column_index": 7,
+      "column_name": "collegeName",
+      "physical_type": "string (Unverified locally)",
+      "semantic_type": "Categorical (Institution)",
+      "meaning": "Collegiate program attended by the player prior to NFL entry.",
+      "evidence_status": "Inferred from data",
+      "profiling_scope": "Uninspected locally (Expected competition schema reference)",
+      "null_count": null,
+      "blank_count": null,
+      "null_proportion": null,
+      "distinct_count": null,
+      "representative_values": [],
+      "numeric_distribution": null,
+      "units": "Text",
+      "valid_range_or_domain": "NCAA / collegiate institution names",
+      "key_role": "Descriptive Attribute",
+      "relationships": [],
+      "data_quality_notes": "Unverified locally \u2014 download CSV and run `python scripts/profile_datasets.py` to measure exact missingness and range.",
+      "analytical_uses": [
+        "Controlling for collegiate conference or program training background."
+      ],
+      "limitations": "Naming spelling variations possible if not standardized.",
+      "tables_sharing_column_name": [
+        "players.csv"
+      ],
+      "cross_table_disambiguation": null
+    }
+  ]
+}

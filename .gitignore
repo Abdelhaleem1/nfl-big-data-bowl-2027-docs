@@ -1,0 +1,42 @@
+# Node & Frontend build artifacts
+node_modules/
+dist/
+dist-ssr/
+*.local
+.vite/
+*.tsbuildinfo
+
+# Python cache & virtual environments
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+.pytest_cache/
+
+# Raw Competition Data & Temporary Archives (NEVER COMMIT RAW DATA)
+data/raw/*
+!data/raw/.gitkeep
+*.csv
+*.zip
+*.parquet
+*.tar
+*.gz
+
+# Credentials & Secrets (NEVER COMMIT CREDENTIALS)
+.env
+.env.*
+*.pem
+*.key
+.kaggle/
+kaggle.json
+access_token
+access_token.txt
+credentials.json
+
+# OS / Editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
