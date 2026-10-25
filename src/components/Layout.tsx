@@ -106,12 +106,6 @@ export const Layout: React.FC = () => {
                       }`}
                     >
                       <span className="truncate">{t.filename}</span>
-                      <span
-                        className={`w-2 h-2 rounded-full shrink-0 ${
-                          t.is_downloaded ? 'bg-emerald-500' : 'bg-amber-400'
-                        }`}
-                        title={t.is_downloaded ? 'Downloaded locally' : 'Pending local download'}
-                      />
                     </NavLink>
                   </li>
                 );

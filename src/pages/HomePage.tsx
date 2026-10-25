@@ -7,7 +7,6 @@ import {
   FileSpreadsheet,
   GitBranch,
   HelpCircle,
-  Terminal,
 } from 'lucide-react';
 import {
   analysisCatalog,
@@ -127,11 +126,9 @@ export const HomePage: React.FC = () => {
         </div>
 
         <div className="p-4 rounded-xl border border-slate-200 bg-white shadow-sm">
-          <div className="text-xs font-medium text-slate-500">Downloaded Locally</div>
-          <div className="mt-1 text-2xl font-bold text-slate-900">
-            {fileInventory.summary.downloaded_files_count} / {fileInventory.summary.total_official_files}
-          </div>
-          <div className="mt-1 text-xs text-slate-500">In `data/raw/`</div>
+          <div className="text-xs font-medium text-slate-500">Target Positions</div>
+          <div className="mt-1 text-2xl font-bold text-slate-900">5 Groups</div>
+          <div className="mt-1 text-xs text-slate-500">WR, TE, DB, OL, DL</div>
         </div>
 
         <div className="p-4 rounded-xl border border-slate-200 bg-white shadow-sm">
@@ -195,9 +192,9 @@ export const HomePage: React.FC = () => {
             <thead>
               <tr className="border-b border-slate-200 bg-slate-50 text-xs font-semibold text-slate-600">
                 <th className="py-2.5 px-4">File</th>
+                <th className="py-2.5 px-4">Category</th>
                 <th className="py-2.5 px-4">In Simple Words</th>
                 <th className="py-2.5 px-4 text-right">Size</th>
-                <th className="py-2.5 px-4">Status</th>
                 <th className="py-2.5 px-4">Evidence</th>
               </tr>
             </thead>
@@ -212,22 +209,12 @@ export const HomePage: React.FC = () => {
                       {f.filename}
                     </Link>
                   </td>
+                  <td className="py-2.5 px-4 text-slate-500 whitespace-nowrap">{f.category}</td>
                   <td className="py-2.5 px-4 text-slate-600 max-w-md">
                     {SIMPLE_DATASET_EXPLANATIONS[f.filename] || f.purpose}
                   </td>
                   <td className="py-2.5 px-4 text-right font-mono text-slate-700 whitespace-nowrap">
                     {f.listed_size_Formatted}
-                  </td>
-                  <td className="py-2.5 px-4 whitespace-nowrap">
-                    <span
-                      className={
-                        f.is_downloaded
-                          ? 'text-emerald-700 font-medium'
-                          : 'text-amber-700'
-                      }
-                    >
-                      {f.is_downloaded ? 'Downloaded' : 'Not downloaded'}
-                    </span>
                   </td>
                   <td className="py-2.5 px-4 whitespace-nowrap">
                     <EvidenceBadge status={f.evidence_status} />
@@ -237,22 +224,6 @@ export const HomePage: React.FC = () => {
             </tbody>
           </table>
         </div>
-      </section>
-
-      {/* Concise CLI Quick Reference */}
-      <section className="p-4 rounded-xl border border-slate-200 bg-white shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-xs">
-        <div className="flex items-start gap-2.5">
-          <Terminal className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
-          <div>
-            <span className="font-semibold text-slate-900">Download & Profile Data Locally:</span>
-            <p className="text-slate-600 mt-0.5">
-              Run in an authenticated terminal to download small CSVs (~145 KB) and refresh all stats.
-            </p>
-          </div>
-        </div>
-        <code className="px-3 py-2 rounded bg-slate-100 text-slate-800 font-mono border border-slate-200 shrink-0">
-          python scripts/acquire_data.py --tier tier1 &amp;&amp; python scripts/profile_datasets.py
-        </code>
       </section>
     </div>
   );

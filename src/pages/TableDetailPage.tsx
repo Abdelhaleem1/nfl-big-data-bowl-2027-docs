@@ -117,9 +117,9 @@ export const TableDetailPage: React.FC = () => {
             </span>
           </div>
           <div className="p-3.5 rounded-xl border border-slate-200 bg-white shadow-sm">
-            <span className="text-slate-500 block">Row Count</span>
-            <span className="font-mono font-semibold text-slate-900 mt-1 block">
-              {table.row_count !== null ? table.row_count.toLocaleString() : 'Unverified'}
+            <span className="text-slate-500 block">Category</span>
+            <span className="font-medium text-slate-900 mt-1 block">
+              {table.category}
             </span>
           </div>
           <div className="p-3.5 rounded-xl border border-slate-200 bg-white shadow-sm">
@@ -129,9 +129,9 @@ export const TableDetailPage: React.FC = () => {
             </span>
           </div>
           <div className="p-3.5 rounded-xl border border-slate-200 bg-white shadow-sm">
-            <span className="text-slate-500 block">Status</span>
+            <span className="text-slate-500 block">Format</span>
             <span className="text-slate-800 font-medium mt-1 block">
-              {table.is_downloaded ? 'Downloaded Locally' : 'Schema Reference'}
+              CSV ({table.encoding})
             </span>
           </div>
         </div>

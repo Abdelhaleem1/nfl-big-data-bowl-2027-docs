@@ -43,15 +43,16 @@ export const DataQualityPage: React.FC = () => {
 
       {/* Coverage Matrix */}
       <section className="space-y-3">
-        <h2 className="text-base font-bold text-slate-900">Table Verification Status</h2>
+        <h2 className="text-base font-bold text-slate-900">Table Schema Summary</h2>
         <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
               <tr className="border-b border-slate-200 bg-slate-50 text-slate-600 font-semibold">
                 <th className="py-2.5 px-4">Table</th>
+                <th className="py-2.5 px-4">Category</th>
                 <th className="py-2.5 px-4">Listed Size</th>
-                <th className="py-2.5 px-4">Rows</th>
-                <th className="py-2.5 px-4">Status</th>
+                <th className="py-2.5 px-4">Columns</th>
+                <th className="py-2.5 px-4">Evidence</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-200">
@@ -65,11 +66,12 @@ export const DataQualityPage: React.FC = () => {
                       {t.filename}
                     </Link>
                   </td>
+                  <td className="py-2.5 px-4 text-slate-600">{t.category}</td>
                   <td className="py-2.5 px-4 font-mono text-slate-600">{t.size_formatted}</td>
-                  <td className="py-2.5 px-4 font-mono text-slate-700">
-                    {t.row_count !== null ? t.row_count.toLocaleString() : 'Unverified'}
+                  <td className="py-2.5 px-4 font-mono text-slate-700">{t.column_count} cols</td>
+                  <td className="py-2.5 px-4">
+                    <EvidenceBadge status={t.evidence_status} />
                   </td>
-                  <td className="py-2.5 px-4 text-slate-600">{t.profiling_mode}</td>
                 </tr>
               ))}
             </tbody>

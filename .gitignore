@@ -6,6 +6,13 @@ dist-ssr/
 .vite/
 *.tsbuildinfo
 
+# Local Python scripts, tests, and reports (Excluded from website Git repo)
+scripts/
+tests/
+data/raw/
+data/reports/
+docs/
+
 # Python cache & virtual environments
 __pycache__/
 *.py[cod]

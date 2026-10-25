@@ -123,17 +123,19 @@ export const DatasetsPage: React.FC = () => {
 
               <div className="flex flex-wrap items-center gap-4 pt-1 text-xs text-slate-500 border-t border-slate-100">
                 <span>
-                  <strong className="text-slate-700">Key:</strong>{' '}
-                  <code className="font-mono">{prof?.candidate_primary_keys.join(', ') || 'nflId'}</code>
+                  <strong className="text-slate-700">Primary Key:</strong>{' '}
+                  <code className="font-mono text-blue-700">
+                    {prof?.candidate_primary_keys.join(', ') || 'nflId'}
+                  </code>
                 </span>
                 <span>•</span>
                 <span>
-                  <strong className="text-slate-700">Columns:</strong> {prof?.column_count || 0}
+                  <strong className="text-slate-700">Documented Columns:</strong>{' '}
+                  {prof?.column_count || 0} fields
                 </span>
                 <span>•</span>
                 <span>
-                  <strong className="text-slate-700">Rows:</strong>{' '}
-                  {file.row_count !== null ? file.row_count.toLocaleString() : 'Unverified locally'}
+                  <strong className="text-slate-700">Format:</strong> CSV
                 </span>
               </div>
             </div>
